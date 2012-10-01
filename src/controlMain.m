@@ -29,8 +29,12 @@ function controlMain(s, speed)
         
         % odo 2: calculate angle
      	% φ ← φ + Δφ = φ - 0.5*(vleft - vright)/(widthfactor)
-        % 2 x 40mm radius * 0.08mm per wheelcount = "width factor" of 1
-     	angle = angle - 0.5*(wheelDeltaL - wheelDeltaR)
+     	% 2 x 40mm radius * 0.08mm per wheelcount != "width factor" of 330, which I just found through trial and error
+     	angle = angle - 0.5*(wheelDeltaL - wheelDeltaR)/330;
+     	
+     	if(angle > 2*pi) angle = angle - 2*pi; end
+     	if(angle < 0) angle = angle + 2*pi; end
+        
         
         % odo 3: calculate position
         % x ← x + Δx =x + 0.5*(vleft + vright) cos(φ)
