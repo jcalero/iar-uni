@@ -1,4 +1,4 @@
-function control(s, speed)
+function controlMain(s, speed)
     turnspeed = round(speed/2);
     
     setCounts(s,0,0);
