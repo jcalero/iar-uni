@@ -1,0 +1,90 @@
+%%% LaTeX Template
+%%% This template is made for project reports
+%%%	You may adjust it to your own needs/purposes
+%%%
+%%% Copyright: http://www.howtotex.com/
+%%% Date: March 2011
+
+%%% Preamble
+\documentclass[paper=a4, fontsize=12pt]{scrartcl}	% Article class of KOMA-script with 11pt font and a4 format
+
+
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+\usepackage{amsmath,amsfonts,amsthm}										% Math packages
+\usepackage[pdftex]{graphicx}														% Enable pdflatex
+\usepackage{url}
+
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}												% Custom sectioning (see below)
+\allsectionsfont{\normalfont\scshape}	% Change font of al section commands
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}														% No page header
+%\fancyfoot[L]{\small \url{HowToTeX.com}}		% You may remove/edit this line 
+\fancyfoot[C]{}													% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+
+%%% Equation and float numbering
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}			% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+%\vspace{-1in} 	
+\usefont{OT1}{bch}{b}{n}
+%\normalfont \normalsize \textsc{University of Edinburgh - School of Informatics} \\ [25pt]
+%\horrule{0.5pt} \\[0.4cm]
+\large IAR - Task 1 Report \\
+%\horrule{2pt} \\[0.5cm]
+}
+\author{
+\normalfont \normalsize
+        Jakob Calero - s0948339\\[-3pt]\normalsize
+	Samuel Neugber - s0821562\\[-3pt]\normalsize
+        \today
+}
+\date{}
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+\section{Abstract}
+In a known environment and with a simpel task one can find all cases and reduce them to simple if statements, doesn't look “smooth” though. Likely to not work that nice for most other cases.
+
+\section{Introduction}
+We approached the problem of simple robot navigation using two separate approaches: Discrete, functional behaviour and more continuous, differential control, as described in the first few chapters of Vehicles (FOOT). The Khepera II robots are circular, two-wheeled robots, which come equipped with 8 infra-red sensors arranged as seen in diagram 1. (DIAGRAM) The task was to move a Khepera II robot around in a relatively static (enclosed) testing arena (DIAGRAM) while following walls, if possible, and avoiding obstacles, if necessary. In order to achieve this behaviour we used discrete conditional cases to determine the current state and act accordingly on the one hand, as well as a more direct mapping between sensor values and motor speeds on the other hand.
+
+\section{Methods}
+\subsection{Gathering Data}
+For either approach, the control program has to know which values of the IR sensors represent certain thresholds for the distance of the robot to an object. The IR sensors have a range of values between 0 and 1020, where the base level is usually around 50 (indoors. daylight and artificial light)  and putting the robot right next to a white wall gives readings of 1000+. Since the relation between sensor values and distance of the robot to an object describes a logarithmic function (DIAGRAM) we found that sensor values of 200+ describe a sensible value representing the robot being near an object, regardless of surface. Additionally, we found that values of 500+ mean that we are too close to an object and values ranging between 180 and 250 are what we are looking for when trying to follow a wall without getting too close or too far away from it (again, regardless of colour/material of the wall). From these values we then extrapolated if necessary.
+\subsection{Functional Control}
+The first approach we took was to identify cases in which the robot needs to react, capture them as conditionals and then identify appropriate behaviour for these cases. As seen in (DIAGRAM) our final control code for this methodology uses just four if-statements, representing seven conditions:
+\begin{itemize}
+ \item There is an object to the front-left or too close directly to the left, so turn right.
+ \item There is an object to the left, but slightly too far away, so turn left.
+ \item There is an object to the right, but slightly too far away, so turn right.
+ \item In any other case, move forward.
+\end{itemize}
+The first two cases use the IR sensors in the front as well as the furthest out sensors on the sides to avoid obstacles in the front of the robot as well as ones which are to the side of the robot that would get in the way of a direct path ahead. The next two cases attempt to capture the fact that the robot may turn away from a wall when avoiding collision so it should turn back towards the wall, if it moves too far away.
+\subsection{Differential Control}
+The second approach we took to solve the task ahead was one described in the first few chapters of Vehicles. (FOOT) Our goal was that, ideally, the robot should always be moving and do so as smoothly as possible (if only to look appealing). The control code in (DIAGRAM) shows that in order to do so, each iteration of the control loop resets the wheel speed to a maximum value and then reduces the speed of the wheel on the opposite side of the corresponding IR sensor if certain thresholds are met. The higher the value of the sensor, the more the speed of the corresponding wheel is reduced.
+\section{Results}
+\section{Discussion}
+\section{Appendix}
+
+%%% End document
+\end{document}
