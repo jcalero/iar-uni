@@ -81,7 +81,7 @@ We approached the problem of navigating a small robot in a known environment usi
 \begin{figure}[!ht]
  \centering
   \includegraphics[width=0.5\textwidth]{IRSensors}
-  \caption{Diagram of IR Sensors on Khepara robot}
+  \caption{Diagram of IR Sensors on Khepera robot}
 \end{figure}
 
 The goal was to move the robot around in a static and enclosed testing arena (\emph{figure 2.2}) while following walls and avoiding obstacles in unknown positions. In both methods we attempted, the robot behaviour follows a simple subsumption control architecture, directly prioritising actions depending on conditional cases. Both approaches were worked on simultaneusly and reviewed over time until one approach was chosen due to performing the task best.
@@ -93,7 +93,7 @@ The goal was to move the robot around in a static and enclosed testing arena (\e
 
 \section{Methods}
 \subsection{Gathering Data}
-For either approach, the control program has to know which values of the IR sensors represent certain thresholds for the distance of the robot to an object. The IR sensors have a range of values between 0 and 1020, where the base level is usually around 50 and putting the robot right next to a white wall gives readings of 1000 and higher. Through experimentation we found that sensor values of 200+ describe a sensible value representing the robot being near an object (within 2cm), regardless of colour and texture of the surface. Additionally, we found that values of 500+ mean that we are too close to an object and values ranging between 180 and 250 are what we are looking for when trying to follow a wall without getting too close or too far away from it. From these values we then extrapolated if necessary.
+The IR sensors on the Khepera have a range of values between 0 and 1020. Experimentation showed that when nothing is close to the robot the sensor values drift at around 50. Sensor values of 200+ describe a sensible value representing the robot being near an object (within 2cm) while values of 500+ mean that we are too close to an object. A range between 180 and 250 where the values we chose as a good distance when trying to follow a wall without getting too close or too far away from it. From these values we then extrapolated if necessary.
 \subsection{Functional Control}
 As seen in \emph{figure 3.1} our control code for this methodology uses just four if-statements.
 
@@ -125,11 +125,13 @@ The final two conditions attempt to capture the fact that the robot may turn awa
 The second approach we took to solve the task ahead was one described in the first few chapters of Vehicles\cite{vehicles}. Our goal was that, ideally, the robot should always be moving and do so as smoothly as possible to maximise efficiency and avoid ``stuttering'' movement. The control code in \emph{Appendix 2} shows that in order to do so, each iteration of the control loop resets the wheel speed to a maximum value and then reduces the speed of the wheel on the opposite side of the corresponding IR sensor if certain thresholds are met. The higher the value of the sensor, the more the speed of the corresponding wheel is reduced.
 \section{Results}
 \subsection{Functional Control}
-Using functional control, the behaviour of the robot was close to being deterministic. The robot reliably followed walls if there were no obstacles present.It managed to avoid obstacles and also stayed close to them if they were long and straight enough. In any other case it just turned away from the object and continued on a straight trajectory. For most cases this behaviour was sufficient to complete the task. A few problems still remain however. One case was that it got stuck between a wall an object, if the object was close enough to the wall and the robot such that the first two rules in the control loop were repeatedly activated in succession. An additional case where the robot would not explore the entire map objects were placed in a square pattern, resulting in the robot bumping into the first object, turning toward the second, driving there and repeating that process continuously.
+Using functional control, the behaviour of the robot was close to being deterministic, reliably following walls with 1-2cm distance. It managed to avoid obstacles to avoid collision and return to the wall searching pattern immediately after.
+
+A few problems still remain however. One case was that it got stuck in narrow passages, such that the first two rules in the control loop were repeatedly activated in succession. An additional case where the robot would not explore the entire map if objects were placed in a square-like pattern, resulting in the robot moving in a loop between the objects without being able to get out.
 \subsection{Differential Control}
-Differential control did not work as intended in most cases, so we did not pursue it for long. The robot did turn smoother than it had using functional control, but it was also harder to control. The robot usually turned away too much when avoiding collision, which meant that it rarely ever followed a wall. This method did however have the benefit that the robot did not get stuck in between even the closest gaps, but nicely reduced it's speed and moved through.
+Differential control did not work as intended in most cases, so we did not pursue it for long. The robot did turn smoother than it had using functional control, but it was also harder to control. The robot usually turned away too much when avoiding collision, which meant that it rarely followed a wall. This method did however have the benefit that the robot did not get stuck in between even the closest gaps, but nicely navigated through.
 \section{Discussion}
-In an environment as small and predictable as the one given in this task, good rule based behaviour is possible since most conditions the robot can be extracted and mapped accordingly. However, the more complex the task and environment get, the harder it will be to achieve such a design. 
+In an environment as small and predictable as the one given in this task, good rule based behaviour is possible since most conditions the robot can be extracted and mapped accordingly and good results follow therein, as shown above. However, the more complex the task and environment get, the harder it will be to achieve such a design. In these cases, differential control, (or even better, full proportional–integral–derivative control) and more dynamic basic behaviour will be useful. Conditional if-cases will run into problems like the \emph{indecisiveness} of our above problem when navigating narrow corridors and are generally very messy to maintain.
 \section{Appendix}
 \subsection{Functional Controller - Source}
 \lstinputlisting{controlMain.m}
