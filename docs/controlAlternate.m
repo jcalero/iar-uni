@@ -1,7 +1,3 @@
-irSens = readIR(s);
-lastIrR1 = irSens(6);
-lastIrL1 = irSens(1);
-
 while (true)
 	irSens = readIR(s);
   irR1 = irSens(6);
@@ -21,9 +17,6 @@ while (true)
 	if(irL1 > 200)
 		rSpeed = rSpeed - round(irL1/100);
 	end
-	
-  lastIrL1 = irL1;
-  lastIrR1 = irR1;
   
   if(irC1 > 200 || irC2 > 200)
     lSpeed = lSpeed - ((irC1 - irC2)/(abs(irC1 - irC2)))
