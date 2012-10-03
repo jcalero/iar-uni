@@ -74,7 +74,7 @@ tabsize=2
 \begin{document}
 \maketitle					% Insert the title here
 \section{Abstract}
-In a known environment and with a simple task one can find all cases and reduce them to simple if statements, doesn't look “smooth” though. Likely to not work that nice for most other cases.
+In a relatively static environment it may be possible to find all states a robot can be in and reduce them to conditions in the control code. This approach worked fine for our simple robot to do its simple task; it followed walls and avoided obstacles using a subsumption architecture based on the conditions we identified. A different approach we attempted to use was to directly inhibit the motor speeds using the information from the infra-red sensors. This resulted in smoother, but less predictable movement. Since the robot was more difficult to control using this method, we concentrated mainly on the conditional control to achieve the task.
 
 \section{Introduction}
 We approached the problem of navigating a small robot in a known environment using two different methods: Discrete, functional behaviour and more continuous, differential control, as described in the first few chapters of Vehicles\cite{vehicles}. The Khepera II robots are circular, two-wheeled robots, which come equipped with 8 infra-red sensors arranged as seen in \emph{figure 2.1}. 
