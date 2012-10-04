@@ -15,9 +15,9 @@ function positions = controlMain(s, speed)
     
     iteration = 0;
     
-    c = onCleanup(@() cleanupfun(positions));
+    % c = onCleanup(@() cleanupfun(positions));
 
-    while (iteration < 500)
+    while (iteration < 1000)
     
     	pause(0.05);
         iteration = iteration +1;
@@ -102,10 +102,10 @@ function positions = controlMain(s, speed)
         
     end
     
-    function p = cleanupfun(positions)
-        fprintf('test');
-        p = positions
-    end
+   % function p = cleanupfun(positions)
+   %     fprintf('test');
+   %     p = positions
+   % end
     
 end
 
