@@ -17,7 +17,7 @@ function positions = controlMain(s, speed)
     
     % c = onCleanup(@() cleanupfun(positions));
 
-    while (iteration < 1000)
+    while (iteration < 2000)
     
     	pause(0.05);
         iteration = iteration +1;
@@ -59,7 +59,7 @@ function positions = controlMain(s, speed)
 		
        % if(~turning)
             % Adjust Left based on centre sensor
-            if ((midRightIR > 150 || rightIR1 > 450 || rightIR2 > 600))
+            if (midRightIR > 150 || rightIR1 > 450 || rightIR2 > 600)
                 stop(s)
                 turn(s,-turnspeed,turnspeed)
                 direction = 'l';
@@ -95,7 +95,7 @@ function positions = controlMain(s, speed)
        % end
 
         % if (direction ~= 'f') 
-        go(s,speed); 
+        go(s,speed);
         %end
         turning = false;
         direction = 'f';
