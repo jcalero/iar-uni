@@ -84,37 +84,13 @@ title, header, authors, date, etc..)
 \begin{document}
 \maketitle					% Insert the title here
 \section{Abstract}
-A dynamically changing task usually requires a dynamic solution. We have therefore successfully revisited the approach of setting motor speeds as a function of the values the sensors give us. The robot will track a lightsource which is sufficiently close while avoiding obstacles and mooving in smooth arcs.
+A dynamically changing task usually requires a dynamic solution. We have therefore successfully revisited the approach of setting motor speeds as a function of the values the sensors give us. The robot will track a lightsource which is sufficiently close while avoiding obstacles and moving in smooth arcs.
 
 
 \section{Introduction}
-In the last task we explored two different control methods for our robot: one which acted on certain threshold-conditions of the infra-red (IR) sensors in discrete steps, and one which directly mapped the values from the sensors to motor speeds. Our findings were that the conditional control approach works well enough in relatively static environments
+In the last task we explored two different control methods for our robot: one which acted on certain threshold-conditions of the infra-red (IR) sensors, and one which directly mapped the values from the sensors to motor speeds. Our findings were that the conditional control approach works well enough in relatively static environments and is a little easier to reason about than the other approach.
 
-We approached the problem of navigating a small robot in a known environment
-using two different methods: Discrete, functional behaviour and more continuous,
-differential control, as described in the first few chapters of
-Vehicles\cite{vehicles}. The Khepera II robots are circular, two-wheeled robots,
-which come equipped with 8 infra-red sensors arranged as seen in \emph{figure
-2.1}. 
-\begin{figure}[!ht]
- \centering
-  \includegraphics[width=0.5\textwidth]{IRSensors}
-  \caption{Diagram of IR Sensors on Khepera robot}
-\end{figure}
-
-The goal was to move the robot around in a static and enclosed testing arena
-(\emph{figure 2.2}) while following walls and avoiding obstacles in unknown
-positions. The functional behaviour followed a simple subsumption control
-architecture, directly prioritising actions depending on conditional cases. The
-differential control on the other hand set the wheel speeds as a function of the
-values returned by the IR sensors. Both approaches were worked on simultaneusly
-and reviewed over time until one approach was chosen due to performing the task
-best.
-\begin{figure}[!ht]
- \centering
-  \includegraphics[width=0.75\textwidth]{mapexample}
-  \caption{Map of driving area with example obstacle placements}
-\end{figure}
+This task, on the other hand, required our robot to exhibit more dynamic behaviour in order to follow a light which could frequently change its position. We therefore went back and found a function which uses the sensor values more directly as input to the motor speeds. Using the light sensors we calculate a relative angle the robot should be facing and that angle is then taken as input to the functions which detemine the speed of the individual wheels.
 
 \section{Methods}
 \subsection{Gathering Data}
