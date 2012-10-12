@@ -1,0 +1,114 @@
+%%% LaTeX Template
+%%% This template is made for project reports
+%%%	You may adjust it to your own needs/purposes
+%%%
+%%% Copyright: http://www.howtotex.com/
+%%% Date: March 2011
+
+%%% Preamble
+\documentclass[paper=a4, fontsize=12pt]{scrartcl}	% Article class of KOMA-script with 12pt font and a4 format
+
+
+\usepackage[english]{babel}				% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}	% Better typography
+\usepackage{amsmath,amsfonts,amsthm}			% Math packages
+\usepackage[pdftex]{graphicx}				% Enable pdflatex
+\usepackage{url}
+\usepackage[margin=1.5in]{geometry}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{framed}
+\usepackage{listings}
+
+\lstset{
+language=Matlab,
+basicstyle=\footnotesize,
+tabsize=2
+}
+
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}					% Custom sectioning (see below)
+\allsectionsfont{\normalfont\scshape}			% Change font of al section commands
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}						% No page header
+%\fancyfoot[L]{\small \url{HowToTeX.com}}		% You may remove/edit this line 
+\fancyfoot[C]{}						% Empty
+\fancyfoot[R]{\thepage}					% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}			% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+
+%%% Equation and float numbering
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}			% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+%%% Maketitle metadata (Defines how everything above the body should look like: title, header, authors, date, etc..)
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+\vspace{-1in} 	
+\usefont{OT1}{bch}{b}{n}
+\normalfont \normalsize \textsc{University of Edinburgh - School of Informatics}
+\\ [25pt]
+\horrule{0.5pt} \\[0.4cm]
+\large IAR - Task 1 Report \\
+\horrule{1pt} \\[0.5cm]
+}
+\author{
+  \normalfont \normalsize
+  Jakob Calero - s0948339\\[-3pt]\normalsize
+  Samuel Neugber - s0821562\\[-3pt]\normalsize
+  \today
+}
+\date{}
+
+
+%%% Begin document
+\begin{document}
+\maketitle					% Insert the title here
+\section{Abstract}
+A dynamically changing task usually requires a dynamic solution. We have therefore successfully revisited the approach of setting motor speeds as a function of the values the sensors give us. The robot will track a lightsource which is sufficiently close while avoiding obstacles and moving in smooth arcs.
+
+
+\section{Introduction}
+In the last task we explored two different control methods for our robot: one which acted on certain threshold-conditions of the infra-red (IR) sensors, and one which directly mapped the values from the sensors to motor speeds. Our findings were that the conditional control approach works well enough in relatively static environments and is a little easier to reason about than the other approach.
+
+This task, on the other hand, required our robot to exhibit more dynamic behaviour in order to follow a light which could frequently change its position. We therefore went back and found a function which uses the sensor values more directly as input to the motor speeds. Using the light sensors we calculate a relative angle the robot should be facing and that angle is then taken as input to the functions which detemine the speed of the individual wheels.
+
+\section{Methods} 
+\subsection{Light Direction Detection}
+Our robot has 8 sensors detecting levels of light at a value range of 0 to 500 arranged as seen in (\emph{figure \ref{img_sensors}}), with 6 sensors in the front and 2 in the back. From this information we ultimately want to estimate a direction the light could be originating from by interpolating the values of the individual sensors. As we initially can estimate the angles each sensor is pointing at we can use the sensor values as weights 
+\subsection{Differential Control}
+
+\subsection{Obstacle Avoidance}
+
+
+\section{Results}
+
+
+\section{Discussion}
+
+
+\section{Appendix}
+\subsection{Functional Controller - Source}
+\lstinputlisting{controlMain.m}
+\subsection{Differential Controller - Source}
+\lstinputlisting{controlAlternate.m}
+\begin{thebibliography}{9}
+\bibitem{vehicles}
+  Valentino Braitenberg,
+  \emph{Vehicles: Experiments in Synthetic Psychology},
+  A Bradford Book,
+  1986.
+\end{thebibliography}
+
+%%% End document
+\end{document}
