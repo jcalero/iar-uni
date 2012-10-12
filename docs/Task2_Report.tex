@@ -86,9 +86,20 @@ This task, on the other hand, required our robot to exhibit more dynamic behavio
 \section{Methods} 
 \subsection{Light Direction Detection}
 \label{LDD}
-Our robot has 8 sensors detecting levels of light at a value range of 0 to 500, which are arranged as seen in (\emph{figure \ref{img_sensors}}), with 6 sensors in the front and 2 in the back. From this information we ultimately want to estimate a direction the light could be originating from by combining the values and positions of the individual sensors.
+Our robot has 8 sensors detecting levels of light at a value range of 0 to 500, which are arranged as seen in (\emph{figure \ref{img_sensors}}). From this information we ultimately want to estimate a direction the light could be originating from by combining the values and orientations of the individual sensors.
 
-As we initially can estimate the angles each sensor is pointing at we can use the sensor values as weights for each of the vectors between the robot and the sensor direction. Summing the vectors would give us a general direction that the strongest light would be coming from. However, given that there are disproportionately many sensors detecting light from the front than from the back this information would be skewed. To offset this we look at the front sensors in pairs, taking the highest value between the two and the angle between them. Now, this would give us a general direction, but considering we're dealing with visible light we're likely to get a lot of interference from other light sources. We therefore also normalise the sensor values (weights) to get the relative size of the final directional vector. A short directional vector would indicate a more even spread reading between sensors and thus a higher likelyhood that it's simply ambient light it's reading and not the light source it's supposed to follow.
+As we initially can estimate the angles each sensor is pointing at we can use the sensor values as weights for each of the vectors between the robot and the sensor direction. Summing the vectors would give us a general direction that the strongest light would be coming from (\emph{figure \ref{dir_formula}}). However, given that there are disproportionately many sensors detecting light from the front than from the back this information would be skewed. To offset this we look at the front sensors in pairs, taking the highest value between the two and the angle between them.
+
+Now, this would give us a general direction, but considering we're dealing with visible light we're likely to get a lot of interference from other light sources. We therefore also normalise the weights to get the relative size of the final directional vector. A short directional vector would indicate a more even spread of readings between sensors and thus a higher likelyhood that it's simply ambient light it's reading and not the light source it's supposed to follow.
+
+\begin{figure}[h!]
+\label{dir_formula}
+\[
+  light\_direction = \sum_{i=1}^{\# of sensors} \mathbf{sensor\_directions_i}*\mathbf{weights_i}
+\]
+\caption{General formula for calculating the final direction of the light source.}
+\end{figure}
+
 \subsection{Differential Control}
 The next step our control program performs is to convert the vector we have calculated on the basis of the light sensors into an angle ranging between -180 and 180 degrees. Given the placement of the sensors, a negative angle will indicate a lightsource to the right and vice versa. Using the function (FUNCTION HERE) we then directly inhibit the speed of the wheel on the side we want to turn to, to the point of getting opposing wheel speeds when the absolute angle is greater than 90 degrees.
 
