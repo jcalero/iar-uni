@@ -97,8 +97,11 @@ In the previous two sections we have established the means to follow a lightsour
 
 In reality, we decided to save some time by simply adding our obstacle avoidance code from the last task, which overrides our differential control in case certain thresholds on the values of the IR sensors are met.
 \section{Results}
+From our experiments we have found that our robot will detect a light source shining at it from roughly X cm away, due to the fact that we take into account the scale of the vector we calculate. Additionally, we found that the average error in the angle we measure versus the actual angle of the lightsource towards the robot is Y degrees.
 
+Regardless/because (<- we don't know yet) of the reliability we achieve from the method we use to find the lightsource, our robot moves towards the lightsource quickly, smoothely and without oscillations in direction of movement. In the presence of obstacles the movement may not be as smooth due to the discrete conditional cases, but it prevents the robot from colliding with an object in almost all cases.
 
+There are just two cases which we have encountered where our control method is not perfect yet. The first case has the robot turning towards the lightsource, only to end up with the light shining on the robot's blind spot. The robot may therefore not detect sufficient light, fall back into the standart behaviour and drive out of the beam's reach. The second case is a problem we have inherited from reusing our obstacle avoidence code. In the case where there are obstacles to the left and to the right of the robot, but not in front, it can loop between the two cases of turning away from the left obstacle, and turning away from the right obstacle.
 \section{Discussion}
 
 
