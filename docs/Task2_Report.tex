@@ -85,12 +85,15 @@ This task, on the other hand, required our robot to exhibit more dynamic behavio
 
 \section{Methods} 
 \subsection{Light Direction Detection}
+\label{LDD}
 Our robot has 8 sensors detecting levels of light at value range of 0 to 500 arranged as seen in (\emph{figure 3.1}). The higher the intensity of the light the lower the value
 \subsection{Differential Control}
 
+
 \subsection{Obstacle Avoidance}
+In the previous two sections we have established the means to follow a lightsource. In order to avoid obstacles we had originally planned to copy the mechanism described in \ref{LDD} to extract a vector from the IR sensors which points in the opposite direction of the obstacle. Ideally, this vector would have been combined with the vector from our lightsource detection, completely overriding the influence of the light when an the robot comes too close to an obstacle.
 
-
+In reality, we decided to save some time by simply adding our obstacle avoidance code from the last task, which overrides our differential control in case certain thresholds on the values of the IR sensors are met.
 \section{Results}
 
 
