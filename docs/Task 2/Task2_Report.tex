@@ -75,17 +75,17 @@ tabsize=2
 \begin{document}
 \maketitle					% Insert the title here
 \section{Abstract}
-A dynamically changing task usually requires a dynamic solution. In this task we are asked to follow a dynamically moving light source while avoiding obstacles in an arena. We have therefore revisited the approach of setting motor speeds as a direct function of the sensor values and assuming obstacle detection from the same conditional approach we used in our previous task. The robot will move towards a sufficiently close lightsource in a smooth trajectory while at the same time avoiding obstacles.
+A dynamically changing task usually requires a dynamic solution. In this task we are asked to follow a dynamically moving light source while avoiding obstacles in an arena. We revisited the approach of setting motor speeds as a direct function of the sensor values from task 1 but assuming obstacle detection from the same conditional approach we used in the same task. Using the light sensors on the robot we calculate the relative angle it should be facing and is then taken as input to the functions which detemine the speed of the individual wheels. The robot will move towards a sufficiently close lightsource in a smooth trajectory while at the same time avoiding obstacles. In 6 out of 7 trials the robot reaches the light with the conditional behaviour of the obstacle avoidance being the main problem.
 
 \section{Introduction}
 In the last task we explored two different control methods for our robot: one which acted on certain threshold-conditions of the infra-red (IR) sensors, and one which directly mapped the values from the sensors to motor speeds. Our findings were that the first approach (conditional control) works well enough in relatively static environments and is a little easier to reason about than the other approach.
 
-This task, on the other hand, required our robot to exhibit more dynamic behaviour in order to follow a light which could frequently change its position. We therefore went back and changed the control method to a more direct function between sensor values and motor control as in our second method in the last task. Using the photo sensors on the robot we calculate a relative angle it should be facing and that angle is then taken as input to the functions which detemine the speed of the individual wheels. The obstacle detection is handled by a conditional approach based on the IR sensors and is taken as higher priority than approaching the light source.
-
+Since this task required our robot to exhibit more dynamic behaviour in order to follow a light which could frequently change its position we chose a control method with a more direct function between sensor values and motor control as in our second method in the last task. The obstacle detection is handled by a conditional approach based on the IR sensors with the highest behaviour priority.
+%Using the light sensors on the robot we calculate the relative angle it should be facing which is then taken as input to the functions which detemine the speed of the individual wheels. 
 \section{Methods} 
 \subsection{Light Direction Detection}
 \label{LDD}
-Our robot has 8 sensors detecting levels of light at a value range of 0 to 500, which are arranged as seen in (\emph{figure \ref{fig:img_sensors}}). From this information we ultimately want to estimate a direction the light could be originating from by combining the values and orientations of the individual sensors.
+Our robot has 8 sensors detecting levels of light which are arranged as seen in (\emph{figure \ref{fig:img_sensors}}). From this information we ultimately want to estimate a direction the light could be originating from by combining the values and orientations of the individual sensors.
 
 \begin{figure}[!ht]
  \centering
@@ -126,30 +126,22 @@ We additionally use the scale of the vector as an indicator to only move towards
 
 Another special case we take into account is when there is a lightsource directly behind the robot. This case is a little problematic since the robot has a blind spot between the side-most front sensors and the back sensors which will cause the light angle to be skewed when in that spot and cause the robot to occasionally loose its trail. To avoid this we add a special case when the light is detected as coming from behind (\(> 130\) or \(< -130\)) which turns the robot by a certain amount (\(\sim180^{\circ}\)) skipping the blind spot completely.
 \subsection{Obstacle Avoidance}
-In the previous two sections we have established the means to follow a lightsource. In order to avoid obstacles we had originally planned to copy the mechanism described in \ref{LDD} to extract a vector from the IR sensors which points in the opposite direction of the obstacle. Ideally, this vector would have been combined with the vector from our lightsource detection, completely overriding the influence of the light when an the robot comes too close to an obstacle. 
+In the previous two sections we have established the means to follow a lightsource. In order to avoid obstacles we had originally planned to copy the mechanism described in \ref{LDD} to extract a vector from the IR sensors which points in the opposite direction of the obstacle. Ideally, this vector would have been combined with the vector from our lightsource detection, completely overriding the influence of the light when the robot comes too close to an obstacle. 
 
 In the end however we decided to save some time by simply adding our obstacle avoidance code from the last task, which overrides our differential control in case certain thresholds of the IR sensor values are met.
 \section{Results}
 From our experiments we have found that our robot will detect a light source shining at it from roughly 70 cm away, due to the fact that we take into account the scale of the vector we calculate. Additionally, we found that the average error in the angle we measure versus the actual angle of the lightsource towards the robot is Y degrees.
 
-Regardless/because (<- we don't know yet) of the reliability we achieve from the method we use to find the lightsource, our robot moves towards the lightsource quickly, smoothely and without oscillations in direction of movement. In the presence of obstacles the movement may not be as smooth due to the discrete conditional cases, but it prevents the robot from colliding with an object in almost all cases.
+Regardless/because (<- we don't know yet) of the reliability we achieve from the method we use to find the lightsource, our robot moves towards the lightsource quickly, smoothely and without strong oscillations in direction of movement. In the presence of obstacles the movement may not be as smooth due to the discrete conditional cases, but it prevents the robot from colliding with an object in almost all cases.
 
 There are just two cases which we have encountered where our control method is not perfect yet. The first case has the robot turning towards the lightsource, only to end up with the light shining on the robot's blind spot. The robot may therefore not detect sufficient light, fall back into the standart behaviour and drive out of the beam's reach. The second case is a problem we have inherited from reusing our obstacle avoidence code. In the case where there are obstacles to the left and to the right of the robot, but not in front, it can loop between the two cases of turning away from the left obstacle, and turning away from the right obstacle.
 \section{Discussion}
-
-
+The combination of a conditional obstacle avoidance and differential goal and movement control works well in the task at hand and prioritising obstacle avoidance allows the robot to stay clear of obstacles long enough to resume the goal movement as soon as possible. Obstacle avoidance still carries over some problems however that could be reduced if we move away from the conditional reactive model to a more direct behaviour based control such as motor schema architecture (Arkin 1989).
 \section{Appendix}
 \subsection{Direction of Light Detection - Source}
 \lstinputlisting{getLightAngle.m}
 \subsection{Controller - Source}
 \lstinputlisting{control2Alternate.m}
-\begin{thebibliography}{9}
-\bibitem{vehicles}
-  Valentino Braitenberg,
-  \emph{Vehicles: Experiments in Synthetic Psychology},
-  A Bradford Book,
-  1986.
-\end{thebibliography}
 
 %%% End document
 \end{document}
