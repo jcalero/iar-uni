@@ -87,7 +87,7 @@ This task, on the other hand, required our robot to exhibit more dynamic behavio
 \label{LDD}
 Our robot has 8 sensors detecting levels of light at a value range of 0 to 500, which are arranged as seen in (\emph{figure \ref{fig:img_sensors}}). From this information we ultimately want to estimate a direction the light could be originating from by combining the values and orientations of the individual sensors.
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
  \centering
   \includegraphics[width=0.5\textwidth]{IRSensors2}
   \caption{Sensors and their virtual angles used to estimate angle of the light source.}
@@ -98,7 +98,7 @@ As we initially can estimate the angles each sensor is pointing at we can use th
 
 Now, this would give us a general direction, but considering we're dealing with visible light we're likely to get a lot of interference from other light sources. We therefore also normalise the weights to get the relative size of the final directional vector. A short directional vector would indicate a more even spread of readings between sensors and thus a higher likelyhood that it's simply ambient light it's reading and not the light source it's supposed to follow.
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \[
   light\_direction = \sum_{i=1}^{\# of sensors} \mathbf{sensor\_directions_i}*\mathbf{weights_i}
 \]
@@ -110,7 +110,7 @@ Now, this would give us a general direction, but considering we're dealing with 
 \subsection{Differential Control}
 The next step our control program performs is to convert the vector we have calculated on the basis of the light sensors into an angle ranging between -180 and 180 degrees. Given the placement of the sensors, a negative angle will indicate a lightsource to the right and vice versa. We then directly inhibit the speed of the wheel on the side we want to turn to, to the point of getting opposing wheel speeds when the absolute angle is greater than 90 degrees.
 
-% \begin{figure}[h!]
+% \begin{figure}[!ht]
 % \[
 %   (lSpeed, rSpeed)(a) = \left\{ 
 %   \begin{array}{l l}
