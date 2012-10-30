@@ -24,7 +24,8 @@ noiseMatrix = [((angle^2)*rotationalNoise) 0; 0 (translationalNoise)];
 
 noiseCovMatrix = jacobianMatrix * noiseMatrix * transpose(jacobianMatrix);
 
-oldErrorCovMatrix = ones(3,3); % this still needs to be initialized properly somewhere at the first timestep. just here for testing purposes
+oldErrorCovMatrix = eye(3); % this still needs to be initialized properly somewhere at the first timestep. just here for testing purposes
+% i think initializing it as the identity matrix is the correct way though
 errorCovMatrix = jacobianMatrixDash * oldErrorCovMatrix * transpose(jacobianMatrixDash) + noiseCovMatrix
 
 % stuck at trying to calculate P(k + 1|k), which is defined using itself...
