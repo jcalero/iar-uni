@@ -23,9 +23,9 @@ end
 s = size(food);
 for y = food'
     d = sqrt(sum((y'-roboPos).^2,2));
-    if(d < 1000)
+    if(d < 2000)
         temp = (y' - roboPos)/norm((y' - roboPos));
-        outVector = outVector + ((1000 - d)/(1000*s(1)).* temp);
+        outVector = outVector + ((2000 - d)/(2000*s(1)).* temp);
     end
 end
 
