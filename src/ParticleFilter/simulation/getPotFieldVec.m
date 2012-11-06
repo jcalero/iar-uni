@@ -1,4 +1,4 @@
-function [ outVector ] = getPotFieldVec( roboPos,map,food )
+function [ angle, intensity ] = getPotFieldVec( roboPos,roboDirection,map,food )
 %GETPOTFIELDVEC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -30,6 +30,14 @@ for y = food
         outVector = outVector + ((1000 - d)/(1000*s(1)).* temp);
     end
 end
+
+intensity = norm(outVector);
+outVector = outVector/norm(outVector);
+
+costheta = dot(outVector, roboDirection)/(norm(outVector)*norm(roboDirection));
+angle = rad2deg(acos(costheta));
+
+angle = sign(outVector(2))*sign(roboDirection(2)) *angle;
 
 end
 
