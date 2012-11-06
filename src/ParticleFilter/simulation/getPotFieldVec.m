@@ -12,7 +12,8 @@ for x = map'
     d = sqrt(sum((x'-roboPos).^2,2));
     if d < 100
         temp = (roboPos - x')/norm((roboPos - x'));
-        outVector = outVector + ((100 - d)/(100*s(1)) .* temp);
+        factor = 400/(d^2);
+        outVector = outVector + (factor .* temp);
     end 
 end
 
