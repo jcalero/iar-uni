@@ -14,16 +14,14 @@ for x = map'
         temp = (roboPos - x')/norm((roboPos - x'));
         factor = 400/(d^2);
         outVector = outVector + (factor .* temp);
-    end 
+    end
 end
-
 
 % go through entire map of food sources, calculate distance,
 % check if distance within 100cm, calculate vector from robot to food,
 % add to overall vector
 s = size(food);
-for y = food
-    
+for y = food'
     d = sqrt(sum((y'-roboPos).^2,2));
     if(d < 1000)
         temp = (y' - roboPos)/norm((y' - roboPos));
@@ -37,7 +35,9 @@ outVector = outVector/norm(outVector);
 costheta = dot(outVector, roboDirection)/(norm(outVector)*norm(roboDirection));
 angle = rad2deg(acos(costheta));
 
-angle = sign(outVector(2))*sign(roboDirection(2)) *angle;
+if roboDirection(1)*outVector(2) - roboDirection(2)*outVector(1)< 0
+    angle = -angle;
+end
 
 end
 
