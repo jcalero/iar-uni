@@ -11,7 +11,7 @@ for i=1:numpart
     particles.direction(i,:)=dir';
 end
 
-weight  = weights( particles, sensor, map, sigma );    % get the weights for every particle
+weight = weights( particles, sensor, map, sigma );    % get the weights for every particle
 j = randsample(numpart,numpart,true,weight);    % draw particle index with replacement
 
 if (find(weight == max(weight)) > 0)
@@ -33,9 +33,9 @@ for i=1:(numpart - floor(reInitAmt*numpart))
 end
 
 if (reInitAmt > 0)
- [reinitpart, ~]=initializeRandom(floor(reInitAmt*numpart),map); % reinitializes 20 percent of the particles
- posit((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.position;
- direc((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.direction;
+    [reinitpart, ~] = initializeRandom(floor(reInitAmt*numpart),map); % reinitializes 'reInitAmt' percent of the particles
+    posit((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.position;
+    direc((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.direction;
 end
 
 

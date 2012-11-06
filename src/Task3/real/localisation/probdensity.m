@@ -12,8 +12,6 @@ N=length(sensor);  % gets number of sensors
 
 mu = sensor; % makes  mean = measured value 
 
- 
 probdens = mvnpdf(realdistance,mu,sigma);    % calculates the multi variative probability density
 
 end
-

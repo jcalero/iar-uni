@@ -2,7 +2,7 @@ function [particles, robot] = initialize( numpartic, map )
 %INITIALIZE initilizes random particles and the position and direction fo
 %the robot
 
-fprintf('Initializing particles and the robot based on starting position')
+fprintf('Initializing particles and the robot based on starting position\n')
 
 % [a b]=size(map.polyline);
 % points=[];
@@ -15,17 +15,17 @@ fprintf('Initializing particles and the robot based on starting position')
 % Xmin=min(points(:,1));
 % Ymin=min(points(:,2));
 
+% Start position and direction
 startX = 30;
 startY = 490;
 startA = [cos(0); sin(0)];
 
-%rng('shuffle');
-particles.position=[(repmat(startX, numpartic, 1)) (repmat(startY, numpartic, 1))]; % puts particles at random in map bounderies
-
+% initialises particles at the starting position and direction
+particles.position=[(repmat(startX, numpartic, 1)) (repmat(startY, numpartic, 1))];
 particles.direction = repmat(startA', numpartic, 1);
 
-robot.position = [startX startY]';   % puts the robot inside maps bounderies
+% puts the robot at the start position
+robot.position = [startX startY]';
 robot.direction = startA;
-
 
 end

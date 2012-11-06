@@ -4,7 +4,7 @@ function [particles, robot] = initializeRandom( numpartic, map )
 
 fprintf('Initializing particles at random positions');
 
-[a b]=size(map.polyline);
+[~, b]=size(map.polyline);
 points=[];
 for j=1:b
    points=[points; map.polyline{j}.p1; map.polyline{j}.p2];   % gets all vertex of the map
