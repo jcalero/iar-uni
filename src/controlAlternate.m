@@ -32,7 +32,7 @@ positions = [xPos,yPos];
 
 iteration = 0;
 
-while (iteration < 500)
+while (iteration < 1000)
     
     iteration = iteration +1;
     
@@ -49,8 +49,10 @@ while (iteration < 500)
     % 2 x 40mm radius * 0.08mm per wheelcount != 'width factor' of 330, which I just found through trial and error
     angle = angle - 0.5*(wheelDeltaL - wheelDeltaR)/330;
 
-    if(angle > 2*pi) angle = angle - 2*pi; end
-    if(angle < 0) angle = angle + 2*pi; end
+    if(angle > 2*pi) 
+        angle = angle - 2*pi; end
+    if(angle < 0) 
+        angle = angle + 2*pi; end
 
 
     % odo 3: calculate position
@@ -86,12 +88,14 @@ while (iteration < 500)
     
     
     if(irC1 > 200 || irC2 > 200)
-       lSpeed = lSpeed - ((irC1 - irC2)/(abs(irC1 - irC2))) * round(irC1/100)
-       rSpeed = rSpeed - ((irC1 - irC2)/(abs(irC1 - irC2))) * round(irC2/100)
+       lSpeed = lSpeed - ((irC1 - irC2)/(abs(irC1 - irC2))) * round(irC1/100);
+       rSpeed = rSpeed - ((irC1 - irC2)/(abs(irC1 - irC2))) * round(irC2/100);
     end
     
-    if(lSpeed > 6) lSpeed = 6; end
-    if(rSpeed > 6) rSpeed = 6; end
+    if(lSpeed > 6) 
+        lSpeed = 6; end
+    if(rSpeed > 6) 
+        rSpeed = 6; end
     
     setSpeeds(s,lSpeed,rSpeed);
 	pause(0.05);

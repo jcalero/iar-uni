@@ -45,8 +45,10 @@ while (iteration < 1000)
     % 2 x 40mm radius * 0.08mm per wheelcount != 'width factor' of 330, which I just found through trial and error
     angle = angle - 0.5*(wheelDeltaL - wheelDeltaR)/330;
 
-    if(angle > 2*pi) angle = angle - 2*pi; end
-    if(angle < 0) angle = angle + 2*pi; end
+    if(angle > 2*pi) 
+        angle = angle - 2*pi; end
+    if(angle < 0) 
+        angle = angle + 2*pi; end
 
 
     % odo 3: calculate position
@@ -78,10 +80,10 @@ while (iteration < 1000)
     
     [a,c] = getLightAngle(s);
     
-    if(c < 0.05)
-        setSpeeds(s,speed,speed);
-        continue;
-    end
+    % if(c < 0.05)
+    %   setSpeeds(s,speed,speed);
+    %   continue;
+    % end
     
     if(a > 0)
         rSpeed = speed;
@@ -96,9 +98,9 @@ while (iteration < 1000)
          oldLSpeed = lSpeed;
          oldRSpeed = rSpeed;
     end
-    if((a > 130 || a < -130) && c > 0.1)
-        pauseTime = 1.5;
-    end
+    % if((a > 130 || a < -130) && c > 0.1)
+    %    pauseTime = 1.5;
+    % end
 end
 stop(s);
 
