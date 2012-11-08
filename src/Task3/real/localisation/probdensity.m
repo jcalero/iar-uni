@@ -6,12 +6,11 @@ function [ probdens ] = probdensity(  position , direction, map, sensor, sigma )
 %   that the sensor would measure if there were no error) within a N-d normal
 %   distribuition with mean=sensor measure
 
-N=length(sensor);  % gets number of sensors
-
-[ realdistance ] = realmeasurement( position , direction, map, N );   %calculates the real values of distaces
+% [ realdistance ] = predictIR( position , direction, map );   %calculates the real values of distaces
+[ realdistance ] = realmeasurement( position, direction, map, 8);
 
 mu = sensor; % makes  mean = measured value 
 
-probdens = mvnpdf(realdistance,mu,sigma);    % calculates the multi variative probability density
+probdens = mvnpdf(realdistance, mu, sigma);    % calculates the multi variative probability density
 
 end

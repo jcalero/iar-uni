@@ -6,6 +6,10 @@ function [ robot, stepmove, oldWheelCounts ] = odometry(s, oldrobot, oldWheelCou
     yPos = oldrobot.position(2);
     angle = atan2(oldrobot.direction(2), oldrobot.direction(1));
     
+    if angle < 0
+        angle = 2*pi + angle;
+    end
+    
     % update Odometry
     % odo 1: Get wheel measurements
     wheelCounts = readCounts(s);

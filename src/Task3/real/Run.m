@@ -32,14 +32,13 @@ turn(s, 3, -1);
 % ===============
 
 while true
-    % Do navigation & control here.
-    % 
+
     
     % Generate new robot position and stepmove from odometry
     [ robot, stepmove, oldWheelCounts ] = odometry(s, oldrobot, oldWheelCounts);
 
     % Read sensor data
-    [ sensor ] = 10200./readIR(s)';
+    [ sensor ] = 5100./readIR(s)';
     
     % Move particles and generate new predicted position
     bestPose = robot;
@@ -57,6 +56,9 @@ while true
 
     % Plot everything
     plotall(robot, particles, map, bestPose);
+    
+    % Do navigation & control here.
+    % 
 
     fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
     pause(0.01);
