@@ -1,19 +1,8 @@
-function [particles, robot] = initialize( numpartic, map )
-%INITIALIZE initilizes random particles and the position and direction fo
+function [particles, robot] = initialize( numpartic )
+%INITIALIZE initilizes random particles and the position and direction for
 %the robot
 
 fprintf('Initializing particles and the robot based on starting position\n')
-
-% [a b]=size(map.polyline);
-% points=[];
-% for j=1:b
-%    points=[points; map.polyline{j}.p1; map.polyline{j}.p2];   % gets all vertex of the map
-% end
-% 
-% Xmax=max(points(:,1));   % define map bounderies
-% Ymax=max(points(:,2));
-% Xmin=min(points(:,1));
-% Ymin=min(points(:,2));
 
 % Start position and direction
 startX = 30;
