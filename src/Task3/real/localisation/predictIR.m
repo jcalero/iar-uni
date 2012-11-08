@@ -5,20 +5,27 @@ function [ irVals ] = predictIR( pos,orient )
 %   given the robot position and orientation.
 %   Then use this information to get the distances
 
-% TODO: Calculate the positions of the sensors
 % TODO: Convert the ir values into distances
 
 irVals = [50,50,50,50,50,50,50,50]; %in millimeters
+rotMat = [cos(orient) -sin(orient); sin(orient) cos(orient)];
 sensorNum = 8;
-sensorAngles = [170, 135, 95, 85, 45, 10, 300, 240];
-sensorPositions = [[1, 3],[2,2.5],[3,1],[3,-1],[2,-2.5],[1,-3],[-3,-1],[-3,1]];
+sensorAngles = [80, 45, 5, -5, -45, -80, -170, 170];
+sensorPositions = [[1, 3];[2,2.5];[3,1];[3,-1];[2,-2.5];[1,-3];[-3,-1];[-3,1]]
 
 sensorAngles = sensorAngles + orient;
 
 for i=1:sensorNum
     
+    % Transpose sensor positions %
+    sensorPositions(i,:) = (rotMat * sensorPositions(i,:)')';
+    sensorPositions(i,:) = sensorPositions(i,:) + pos;
+    
+    % Adjust sensor angles after we have added the robot angle before %
     if sensorAngles(i) > 360
        sensorAngles(i) = sensorAngles(i) - 360;
+    else if sensorAngles(i) < 0
+       sensorAngles(i) = sensorAngles(i) + 360;
     end
     
     [a b]=size(map.polyline);       %gets the number of polylines
