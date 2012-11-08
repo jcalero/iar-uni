@@ -1,4 +1,4 @@
-function [ irVals ] = predictIR( pos, orient, map, centerMap )
+function [ irVals ] = predictIRNew( pos, orient, map, centerMap )
 %PREDICTIR Summary of this function goes here
 %   What this is supposed to do:
 %   Calculate the positions and orientations of the ir sensors,
