@@ -27,7 +27,9 @@ centerMapSize = centerMapSize(1);
 newPolyLines = [map.polyline{1}];
 for i=2:centerMapSize
    diff = centerMap(i,:) - pos;
-   if sqrt(diff(1)^2+diff(2)^2) < 100
+   if (i == 4 || i == 13) && sqrt(diff(1)^2+diff(2)^2) < 400
+       newPolyLines = [newPolyLines map.polyline{i}];
+   elseif sqrt(diff(1)^2+diff(2)^2) < 200
        newPolyLines = [newPolyLines map.polyline{i}];
    end
 end
@@ -41,7 +43,7 @@ for i=1:sensorNum
     % Adjust sensor angles after we have added the robot angle before %
     if sensorAngles(i) > 2*pi
        sensorAngles(i) = sensorAngles(i) - 2*pi;
-    else if sensorAngles(i) < 0
+    elseif sensorAngles(i) < 0
        sensorAngles(i) = sensorAngles(i) + 2*pi;
     end
     
