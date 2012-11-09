@@ -11,6 +11,8 @@ load centerPointsMap
 [ realdistance ] = predictIRNew( position', direction, map, centerPoints );   %calculates the real values of distaces
 %[ realdistance ] = realmeasurement( position, direction, map, 8);
 
+%realdistance'
+
 mu = sensor; % makes  mean = measured value 
 
 probdens = mvnpdf(realdistance, mu, sigma);    % calculates the multi variative probability density

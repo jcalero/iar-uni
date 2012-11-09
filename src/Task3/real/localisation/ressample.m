@@ -2,12 +2,14 @@ function [ particles, bestPose ] = ressample( particles, sensor, stepmove, map, 
 %RESSAMPLE Particle filter reassampling code. 
 %   Detailed explanation goes here
 
+load centerPointsMap
+
 reInitAmt = 0; % Percentage of samples that should be reinitialised.
 
 [numpart ~]= size(particles.position);
 tic
 for i=1:numpart
-    [ pos, dir ] = moveParticles( particles.position(i,:)', particles.direction(i,:)', stepmove ,map);
+    [ pos, dir ] = moveParticles( particles.position(i,:)', particles.direction(i,:)', stepmove, map, centerPoints);
     particles.position(i,:)  = pos';   % move particles following the stepmove plan
     particles.direction(i,:) = dir';
 end

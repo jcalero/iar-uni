@@ -11,4 +11,3 @@ end
 weight=weight/norm(weight);       % then the vector of weights is normalized
 
 end
-

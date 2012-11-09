@@ -4,17 +4,20 @@ function [ position, direction ] = moveParticles( position, direction, stepmove 
 %   the function considers stochasticity affecting the turn angle and speed
 %   and constraints the particle movements based on map data
 
-theta=stepmove.turn+randn*stepmove.turn/4;      % the turn angle is afected by stochasticity
+theta=stepmove.turn+randn*stepmove.turn/2;      % the turn angle is afected by stochasticity
 trans=[cos(theta) -sin(theta);     % defines the rotation operator
       sin(theta) cos(theta)];
-speed=stepmove.speed+randn*10;    %the speed is afected by stochasticity
+speed=stepmove.speed+randn*stepmove.speed/5;    %the speed is afected by stochasticity
 
 direction= trans*direction;         %rotates the direction
 direction=direction/norm(direction); %normalizes the direction
 
+centerMapSize = size(centerMap);
+centerMapSize = centerMapSize(1);
+
 newPolyLines = [map.polyline{1}];
 for i=2:centerMapSize
-   diff = centerMap(i,:) - position;
+   diff = centerMap(i,:) - position';
    if (i == 4 || i == 13) && sqrt(diff(1)^2+diff(2)^2) < 400
        newPolyLines = [newPolyLines map.polyline{i}];
    elseif sqrt(diff(1)^2+diff(2)^2) < 200
@@ -30,7 +33,7 @@ for j=1:b       % for all polylines
         % could block the movement
         [ ~, distan ] = distance( position, direction, newPolyLines(j).p1(i,:)', newPolyLines(j).p2(i,:)' );
         if distan<mindistance
-            mindistance=distan;            
+            mindistance=distan;
         end
     end
 end
