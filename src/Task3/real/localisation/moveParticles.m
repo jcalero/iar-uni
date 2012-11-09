@@ -4,9 +4,9 @@ function [ position, direction ] = moveParticles( position, direction, stepmove 
 %   the function considers stochasticity affecting the turn angle and speed
 %   and constraints the particle movements based on map data
 
-theta=stepmove.turn+randn/8;      % the turn angle is afected by stochasticity
-trans=[cos(theta) sin(theta);     % defines the rotation operator
-      -sin(theta) cos(theta)];
+theta=stepmove.turn+randn*stepmove.turn/4;      % the turn angle is afected by stochasticity
+trans=[cos(theta) -sin(theta);     % defines the rotation operator
+      sin(theta) cos(theta)];
 speed=stepmove.speed+randn*10;    %the speed is afected by stochasticity
 
 direction= trans*direction;         %rotates the direction
@@ -25,7 +25,7 @@ for j=1:b       % for all polylines
     end
 end
 
-mindistance=speed;
+%mindistance=speed;
 
 % if the intersection is close enought, the stops before the
 % intersection

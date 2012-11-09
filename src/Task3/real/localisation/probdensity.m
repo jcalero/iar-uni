@@ -6,8 +6,10 @@ function [ probdens ] = probdensity(  position , direction, map, sensor, sigma )
 %   that the sensor would measure if there were no error) within a N-d normal
 %   distribuition with mean=sensor measure
 
-% [ realdistance ] = predictIR( position , direction, map );   %calculates the real values of distaces
-[ realdistance ] = realmeasurement( position, direction, map, 8);
+load centerPointsMap
+
+[ realdistance ] = predictIRNew( position', direction, map, centerPoints );   %calculates the real values of distaces
+%[ realdistance ] = realmeasurement( position, direction, map, 8);
 
 mu = sensor; % makes  mean = measured value 
 

@@ -13,7 +13,7 @@ if angle < 0
     angle = 2*pi + angle;
 end
 
-irVals = [50,50,50,50,50,50,50,50]; %in millimeters
+irVals = ones(1,8) * 70; %in millimeters
 rotMat = [cos(angle) -sin(angle); sin(angle) cos(angle)];
 sensorNum = 8;
 sensorAngles = [1.3963, 0.7854, 0.0873, -0.0873, -0.7854, -1.3963, -2.9671, 2.9671];
@@ -60,5 +60,6 @@ for i=1:sensorNum
     
 end
 
+irVals = irVals';
 end
 

@@ -1,4 +1,4 @@
-function [ distances ] = getDistFromIR( irVals,map )
+function [ distances ] = getDistFromIR( irVals, map )
 %GETDISTFROMIR Summary of this function goes here
 %   Detailed explanation goes here
 

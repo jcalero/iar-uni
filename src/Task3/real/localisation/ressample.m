@@ -5,15 +5,17 @@ function [ particles, bestPose ] = ressample( particles, sensor, stepmove, map, 
 reInitAmt = 0; % Percentage of samples that should be reinitialised.
 
 [numpart ~]= size(particles.position);
+tic
 for i=1:numpart
     [ pos, dir ] = moveParticles( particles.position(i,:)', particles.direction(i,:)', stepmove ,map);
     particles.position(i,:)  = pos';   % move particles following the stepmove plan
     particles.direction(i,:) = dir';
 end
+toc
 
-timerWeights = tic;
+%timerWeights = tic;
 weight = weights( particles, sensor, map, sigma );    % get the weights for every particle
-wgt = toc(timerWeights)
+%wgt = toc(timerWeights);
 j = randsample(numpart,numpart,true,weight);    % draw particle index with replacement
 
 if (find(weight == max(weight)) > 0)
