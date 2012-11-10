@@ -7,7 +7,7 @@ stepmove.turn=0;     % angle to turn at every iteration
 t = 0;
 load realmap
 load distToIRMap
-load centerPointsMap
+centerPoints = makeCenterPoints(realMap);
 potFieldMap = getPotFieldMap();
 
 foods = [];
