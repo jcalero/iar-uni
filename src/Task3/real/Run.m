@@ -10,7 +10,7 @@ load distToIRMap
 load centerPointsMap
 potFieldMap = getPotFieldMap();
 
-goals = [480 480];
+goals = [450 150];
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
 
@@ -83,11 +83,11 @@ while true
     
     % Update robot position with the predicted position
     if (size(bestPose.position, 1) == 1 || size(bestPose.position, 2) == 1)
-        fprintf('here\n');
+        %fprintf('here\n');
         %robot.position = bestPose.position;
         %robot.direction = bestPose.direction;
     else
-        fprintf('there\n');
+        %fprintf('there\n');
         %robot.position = bestPose.position(1,:);
         %robot.direction = bestPose.direction(1,:);
     end
@@ -105,46 +105,47 @@ while true
     plotall(robot, particles, map, bestPose);
     
     % Do navigation & control here.
-    %
     
-%     foundFood = 1;
-%     [~,indeces] = size(find(sensor > 30));
-%     if indeces > 0
-%        foundFood = 0;
-%     end
-%     
-%     if foundFood && (size(goals) == 0 || find(ismember(goals,robot.position)) > 0)
-%         goals = [goals robot.position];
-%         stop(s);
-%         continue
-%     end
-
-    robot.position
-    robot.direction
+    foundFood = 0;
+    indeces = size(find(sensor > 30),1);
+    if indeces == 0
+       foundFood = 1;
+    end
+    goals
+    % && (size(goals,1) == 0 || size(strcmp([ 1 1 ], ismember(goals,robot.position))) > 0)
+    if (foundFood == 1 && (size(strmatch([ 1 1 ], ismember(goals,robot.position+1)), 1) == 0))
+        fprintf('FOOOOOOOOOOOOD! Nom nom nom nomonomomomnnom....\n');
+        if (mydist(robot.position, goals(size(goals,1),:)) > 20)
+            goals = [goals; robot.position];
+        end
+        stop(s);
+        continue
+    end
+    
     
     [a,c] = getPotFieldVec(robot, potFieldMap, goals);
     
     a
     
-%     if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
-%         go(s,speed);
-%         continue;
-%     end
-%     
-%     % Adjust Left based on centre sensor
-%     if (midRightIR < 55 || rightIR1 < 37.5 || rightIR2 < 28)
-%         stop(s)
-%         turn(s,-turnspeed,turnspeed)
-%         continue
-%     end
-% 
-%     % Adjust Left based on centre sensor
-%     if ((midLeftIR < 55 || leftIR1 < 37.5 || leftIR2 < 28))
-%         stop(s)
-%         turn(s,turnspeed,-turnspeed)
-%         continue
-%     end
-%     
+    if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
+        go(s,speed);
+        continue;
+    end
+    
+    % Adjust Left based on centre sensor
+    if (midRightIR < 55 || rightIR1 < 37.5 || rightIR2 < 28)
+        stop(s)
+        turn(s,-turnspeed,turnspeed)
+        continue
+    end
+
+    % Adjust Left based on centre sensor
+    if ((midLeftIR < 55 || leftIR1 < 37.5 || leftIR2 < 28))
+        stop(s)
+        turn(s,turnspeed,-turnspeed)
+        continue
+    end
+    
     if(a > 0)
         rSpeed = speed;
         lSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
