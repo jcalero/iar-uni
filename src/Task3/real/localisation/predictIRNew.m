@@ -27,7 +27,7 @@ centerMapSize = centerMapSize(1);
 newPolyLines = [map.polyline{1}];
 for i=2:centerMapSize
    diff = centerMap(i,:) - pos;
-   if (i == 4 || i == 13) && sqrt(diff(1)^2+diff(2)^2) < 400
+   if (i == 4 || i == 10) && sqrt(diff(1)^2+diff(2)^2) < 400
        newPolyLines = [newPolyLines map.polyline{i}];
    elseif sqrt(diff(1)^2+diff(2)^2) < 200
        newPolyLines = [newPolyLines map.polyline{i}];
