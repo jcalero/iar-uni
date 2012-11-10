@@ -2,22 +2,12 @@ function [ particles, bestPose ] = ressample( particles, sensor, stepmove, map, 
 %RESSAMPLE Particle filter reassampling code. 
 %   Detailed explanation goes here
 
-load centerPointsMap
 
 reInitAmt = 0; % Percentage of samples that should be reinitialised.
 
 [numpart ~]= size(particles.position);
-tic
-for i=1:numpart
-    [ pos, dir ] = moveParticles( particles.position(i,:)', particles.direction(i,:)', stepmove, map, centerPoints);
-    particles.position(i,:)  = pos';   % move particles following the stepmove plan
-    particles.direction(i,:) = dir';
-end
-toc
 
-%timerWeights = tic;
 weight = weights( particles, sensor, map, sigma );    % get the weights for every particle
-%wgt = toc(timerWeights);
 j = randsample(numpart,numpart,true,weight);    % draw particle index with replacement
 
 if (find(weight == max(weight)) > 0)
@@ -30,8 +20,12 @@ posit=zeros(numpart,2);
 direc=zeros(numpart,2);
 
 for i=1:(numpart - floor(reInitAmt*numpart))
-    posit(i,:) = particles.position(j(i),:);   % get new particle, with drawn index
-    direc(i,:) = particles.direction(j(i),:);
+    posit(i,:) = particles.position(j(i),:) + randn(1,2)*stepmove.speed/10;   % get new particle, with drawn index and noise
+    theta=randn*stepmove.turn/4;
+    trans=[cos(theta) sin(theta);
+           -sin(theta) cos(theta)];
+
+    direc(i,:) = (trans*particles.direction(j(i),:)')';
 end
 
 if (reInitAmt > 0)

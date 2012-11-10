@@ -1,4 +1,4 @@
-function [ angle, intensity ] = getPotFieldVec( roboPos,roboDirection,map,food )
+function [ angle, intensity ] = getPotFieldVec(robot,map,food )
 %GETPOTFIELDVEC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,9 +9,9 @@ outVector = [0 0];
 % add to overall vector
 s = size(map);
 for x = map'
-    d = sqrt(sum((x'-roboPos).^2,2));
+    d = sqrt(sum((x'-robot.position).^2,2));
     if d < 100
-        temp = (roboPos - x')/norm((roboPos - x'));
+        temp = (robot.position - x')/norm((robot.position - x'));
         factor = 400/(d^2);
         outVector = outVector + (factor .* temp);
     end
@@ -22,9 +22,9 @@ end
 % add to overall vector
 s = size(food);
 for y = food'
-    d = sqrt(sum((y'-roboPos).^2,2));
+    d = sqrt(sum((y'-robot.position).^2,2));
     if(d < 2000)
-        temp = (y' - roboPos)/norm((y' - roboPos));
+        temp = (y' - robot.position)/norm((y' - robot.position));
         outVector = outVector + ((2000 - d)/(2000*s(1)).* temp);
     end
 end
@@ -32,10 +32,10 @@ end
 intensity = norm(outVector);
 outVector = outVector/norm(outVector);
 
-costheta = dot(outVector, roboDirection)/(norm(outVector)*norm(roboDirection));
+costheta = dot(outVector, robot.direction)/(norm(outVector)*norm(robot.direction));
 angle = rad2deg(acos(costheta));
 
-if roboDirection(1)*outVector(2) - roboDirection(2)*outVector(1)< 0
+if robot.direction(1)*outVector(2) - robot.direction(2)*outVector(1)< 0
     angle = -angle;
 end
 

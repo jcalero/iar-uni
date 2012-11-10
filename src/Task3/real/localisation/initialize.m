@@ -5,8 +5,8 @@ function [particles, robot] = initialize( numpartic )
 fprintf('Initializing particles and the robot based on starting position\n')
 
 % Start position and direction
-startX = 40;
-startY = 40;
+startX = 150;
+startY = 700;
 startA = [cos(pi/2); sin(pi/2)];
 
 % initialises particles at the starting position and direction

@@ -18,7 +18,7 @@ for line = lines
     for j = 1:s-1
         d1 = sqrt(sum(((line{1}.p1(j,:) - line{1}.p1(j+1,:))).^2,2));
         
-        n = floor(d1/50);
+        n = floor(d1/25);
         
         if n == 0
             outPoint = line{1}.p1(j,:);
