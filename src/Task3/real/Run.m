@@ -12,6 +12,7 @@ potFieldMap = getPotFieldMap();
 
 foods = [];
 target = [460 490];
+LEDtimer = tic;
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
 
@@ -75,8 +76,18 @@ while true
                 robot.direction = bestPose.direction;
             else
                 %fprintf('there\n');
-                %robot.position = bestPose.position(1,:);
-                %robot.direction = bestPose.direction(1,:);
+                index = 1;
+                prevd = inf;
+                d = inf;
+                for i=1:size(bestPose.position,1)
+                    prevd = d;
+                    d = min(mydist(robot.position, bestPose.position(i,:)), d);
+                    if (~isequal(d,prevd))
+                        index = i;
+                    end
+                end
+                robot.position = bestPose.position(index,:);
+                robot.direction = bestPose.direction(index,:);
             end
         end
     end
@@ -99,7 +110,7 @@ while true
     plotall(robot, particles, map, bestPose);
     
     % Do navigation & control.
-    [ oldLSpeed, oldRSpeed, foods, target ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed );
+    [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, LEDtimer );
 
     % fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
     pause(0.01);

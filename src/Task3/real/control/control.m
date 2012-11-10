@@ -1,4 +1,4 @@
-function [ oldLSpeed, oldRSpeed, foods, target ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed )
+function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, LEDtimer )
 %CONTROL Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -16,16 +16,22 @@ function [ oldLSpeed, oldRSpeed, foods, target ] = control(s, robot, potFieldMap
     
     if (mydist(home, robot.position) < 20 && isequal(target,home))
         fprintf('Robot is close to home\n');
-        if (size(foods,1) > 1)
+        if (size(foods,1) > 0)
             fprintf('New target set to first food source\n');
             target = foods(1, :);
+            LEDtimer = tic;
+            toggleLED(s, 0, 1);
         else
             fprintf('New target set randomly\n');
             target = [rand*940 rand*1440];
         end
     end
     
-    if (mydist(target, robot.position) < 20)
+    if (toc(LEDtimer) > 0.75)
+        toggleLED(s, 0, 0)
+    end
+    
+    if (mydist(target, robot.position) < 20 && size(foods,1) == 0)
         fprintf('New target set randomly because reached target\n');
         target = [rand*940 rand*1440];
     end
