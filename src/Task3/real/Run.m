@@ -49,7 +49,6 @@ while true
     [ robot, stepmove, oldWheelCounts ] = odometry(s, oldrobot, oldWheelCounts);
     
     % Read sensor data
-    %[ sensor ] = 5100./readIR(s)';
     [ sensor ] = getDistFromIR(readIR(s), distToIRMap)';
     leftIR1 = sensor(1);
     leftIR2 = sensor(2);
@@ -129,9 +128,8 @@ while true
         continue
     end
     
-    
     [a,c] = getPotFieldVec(robot, potFieldMap, goals);
-     
+
     if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
         go(s,speed);
         continue;
