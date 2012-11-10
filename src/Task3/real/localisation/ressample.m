@@ -1,4 +1,4 @@
-function [ particles, bestPose ] = ressample( particles, sensor, stepmove, map, sigma)
+function [ particles, bestPose, oldWeights ] = ressample( particles, sensor, stepmove, map, sigma, oldWeights)
 %RESSAMPLE Particle filter reassampling code. 
 %   Detailed explanation goes here
 
@@ -7,7 +7,7 @@ reInitAmt = 0; % Percentage of samples that should be reinitialised.
 
 [numpart ~]= size(particles.position);
 
-weight = weights( particles, sensor, map, sigma );    % get the weights for every particle
+weight = weights( particles, sensor, map, sigma, oldWeights );    % get the weights for every particle
 j = randsample(numpart,numpart,true,weight);    % draw particle index with replacement
 
 if (find(weight == max(weight)) > 0)
@@ -37,6 +37,8 @@ end
 
 particles.position=posit;      %writes matrices on the structure
 particles.direction=direc;
+
+oldWeights = weight;
 
 
 end

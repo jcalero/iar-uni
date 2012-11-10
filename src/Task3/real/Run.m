@@ -16,6 +16,8 @@ LEDtimer = tic;
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
 
+oldWeights = ones(numparticles,1);
+
 oldrobot.position = robot.position;
 oldrobot.direction = robot.direction;
 
@@ -66,7 +68,7 @@ while true
         end
         if (mod(t, 10) == 0)
             stop(s);
-            [ particles, bestPose ] = ressample(particles, sensor, stepmove, map ,sigma);  % ressample
+            [ particles, bestPose, oldWeights ] = ressample(particles, sensor, stepmove, map ,sigma, oldWeights);  % ressample
             setSpeeds(s, lSpeed, rSpeed);
             
             % Update robot position with the predicted position
