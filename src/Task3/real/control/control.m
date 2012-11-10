@@ -51,7 +51,7 @@ function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, p
         stop(s);
         inGoals = 0;
         for i=1:size(foods,1)
-            if (mydist(robot.position, foods(i,:)) < 20)
+            if (mydist(robot.position, foods(i,:)) < 50)
                 inGoals = 1;
                 break;
             end
