@@ -10,15 +10,16 @@ load distToIRMap
 load centerPointsMap
 potFieldMap = getPotFieldMap();
 
-goals = [450 150];
+foods = [];
+target = [460 490];
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
 
 oldrobot.position = robot.position;
 oldrobot.direction = robot.direction;
 
-stddeviation=300;  % defines stddeviation. they are the same for every dimension.
-ro=.5;   
+stddeviation=30;  % defines stddeviation. they are the same for every dimension.
+ro=.5;
 sigma=[]; sigma(1:N,1:N)=ro*stddeviation^2; sigma=sigma-sigma.*eye(N)+eye(N).*stddeviation^2; % defines the covariance matrix 
 
 % Initial plotting
@@ -50,14 +51,6 @@ while true
     
     % Read sensor data
     [ sensor ] = getDistFromIR(readIR(s), distToIRMap)';
-    leftIR1 = sensor(1);
-    leftIR2 = sensor(2);
-    midLeftIR = sensor(3);
-    midRightIR = sensor(4);
-    rightIR2 = sensor(5);
-    rightIR1 = sensor(6);
-    backRightIR = sensor(7);
-    backLeftIR = sensor(8);
     
     % Move particles and generate new predicted position
     bestPose = robot;
@@ -74,23 +67,25 @@ while true
             stop(s);
             [ particles, bestPose ] = ressample(particles, sensor, stepmove, map ,sigma);  % ressample
             setSpeeds(s, lSpeed, rSpeed);
+            
+            % Update robot position with the predicted position
+            if (size(bestPose.position, 1) == 1 || size(bestPose.position, 2) == 1)
+                %fprintf('here\n');
+                robot.position = bestPose.position;
+                robot.direction = bestPose.direction;
+            else
+                %fprintf('there\n');
+                %robot.position = bestPose.position(1,:);
+                %robot.direction = bestPose.direction(1,:);
+            end
         end
     end
-    size(bestPose.position);
     
+    % Some test outputs
+    size(bestPose.position);
     bestPose.position(1,:);
     
-    % Update robot position with the predicted position
-    if (size(bestPose.position, 1) == 1 || size(bestPose.position, 2) == 1)
-        %fprintf('here\n');
-        %robot.position = bestPose.position;
-        %robot.direction = bestPose.direction;
-    else
-        %fprintf('there\n');
-        %robot.position = bestPose.position(1,:);
-        %robot.direction = bestPose.direction(1,:);
-    end
-    
+    % Fix for annoying one-case situation.
     if (size(robot.position, 1) == 2 && size(robot.position, 2) == 1)
         robot.position = robot.position';
         robot.direction = robot.direction';
@@ -103,67 +98,9 @@ while true
     % Plot everything
     plotall(robot, particles, map, bestPose);
     
-    % Do navigation & control here.
-    
-    foundFood = 0;
-    indeces = size(find(sensor > 30),1);
-    if indeces == 0
-       foundFood = 1;
-    end
-    
-    if (foundFood == 1 && (size(strmatch([ 1 1 ], ismember(goals,robot.position+1)), 1) == 0))
-        fprintf('FOOOOOOOOOOOOD! Nom nom nom nomonomomomnnom....\n');
-        stop(s);
-        inGoals = 0;
-        for i=1:size(goals,1)
-            if (mydist(robot.position, goals(i,:)) < 20)
-                inGoals = 1;
-                break;
-            end
-        end
-        
-        if (~inGoals)
-            goals = [goals; robot.position];
-        end
-        continue
-    end
-    
-    [a,c] = getPotFieldVec(robot, potFieldMap, goals);
+    % Do navigation & control.
+    [ oldLSpeed, oldRSpeed, foods, target ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed );
 
-    if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
-        go(s,speed);
-        continue;
-    end
-    
-    % Adjust Left based on centre sensor
-    if (midRightIR < 55 || rightIR1 < 37.5 || rightIR2 < 28)
-        stop(s)
-        turn(s,-turnspeed,turnspeed)
-        continue
-    end
-
-    % Adjust Left based on centre sensor
-    if ((midLeftIR < 55 || leftIR1 < 37.5 || leftIR2 < 28))
-        stop(s)
-        turn(s,turnspeed,-turnspeed)
-        continue
-    end
-    
-    if(a > 0)
-        rSpeed = speed;
-        lSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
-    else
-        lSpeed = speed;
-        rSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
-    end
-    
-    
-    if(oldLSpeed ~= lSpeed || oldRSpeed ~= rSpeed)
-         setSpeeds(s,lSpeed,rSpeed);
-         oldLSpeed = lSpeed;
-         oldRSpeed = rSpeed;
-    end
-
-    fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
+    % fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
     pause(0.01);
 end

@@ -29,7 +29,7 @@ for i=1:(numpart - floor(reInitAmt*numpart))
 end
 
 if (reInitAmt > 0)
-    [reinitpart, ~] = initializeRandom(floor(reInitAmt*numpart),map); % reinitializes 'reInitAmt' percent of the particles
+    [reinitpart] = initializeRandom(floor(reInitAmt*numpart),map); % reinitializes 'reInitAmt' percent of the particles
     posit((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.position;
     direc((numpart - floor(reInitAmt*numpart)+1):numpart,:)=reinitpart.direction;
 end

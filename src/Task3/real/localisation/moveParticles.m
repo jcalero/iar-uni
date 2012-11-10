@@ -38,8 +38,6 @@ for j=1:b       % for all polylines
     end
 end
 
-%mindistance=speed;
-
 % if the intersection is close enought, the stops before the
 % intersection
 if  mindistance<stepmove.speed
