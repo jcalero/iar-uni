@@ -111,22 +111,27 @@ while true
     if indeces == 0
        foundFood = 1;
     end
-    goals
-    % && (size(goals,1) == 0 || size(strcmp([ 1 1 ], ismember(goals,robot.position))) > 0)
+    
     if (foundFood == 1 && (size(strmatch([ 1 1 ], ismember(goals,robot.position+1)), 1) == 0))
         fprintf('FOOOOOOOOOOOOD! Nom nom nom nomonomomomnnom....\n');
-        if (mydist(robot.position, goals(size(goals,1),:)) > 20)
+        stop(s);
+        inGoals = 0;
+        for i=1:size(goals,1)
+            if (mydist(robot.position, goals(i,:)) < 20)
+                inGoals = 1;
+                break;
+            end
+        end
+        
+        if (~inGoals)
             goals = [goals; robot.position];
         end
-        stop(s);
         continue
     end
     
     
     [a,c] = getPotFieldVec(robot, potFieldMap, goals);
-    
-    a
-    
+     
     if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
         go(s,speed);
         continue;
