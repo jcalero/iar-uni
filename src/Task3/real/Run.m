@@ -55,9 +55,6 @@ while true
     % Generate new robot position and stepmove from odometry
     [ robot, stepmove, oldWheelCounts ] = odometry(s, oldrobot, oldWheelCounts);
     
-    % Read sensor data
-    [ sensor ] = getDistFromIR(readIR(s), distToIRMap)';
-    
     % Move particles and generate new predicted position
     bestPose = robot;
 %     bestPose.position = bestPose.position';
@@ -71,6 +68,8 @@ while true
         end
         if (mod(t, 10) == 0)
             stop(s);
+			% Read sensor data
+			[ sensor ] = getDistFromIR(readIR(s), distToIRMap)';
             [ particles, bestPose, oldWeights ] = ressample(particles, sensor, stepmove, map ,sigma, oldWeights, centerPoints);  % ressample
             % setSpeeds(s, lSpeed, rSpeed);
             
@@ -114,6 +113,10 @@ while true
     
     % Do navigation & control.
     timers = [ LEDtimer ; ExploreTimer ; FoodTimer ; GiveUpTimer ];
+	if (mod(t, 10) ~= 0)
+		% Read sensor data
+		[ sensor ] = getDistFromIR(readIR(s), distToIRMap)';
+	end
     [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, timers, isAtFood );
     LEDtimer = timers(1);
     ExploreTimer = timers(2);
