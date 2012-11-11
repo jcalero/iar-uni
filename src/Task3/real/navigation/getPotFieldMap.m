@@ -1,4 +1,4 @@
-function  potFieldMap  = getPotFieldMap()
+function  potFieldMap  = getPotFieldMap(resolution)
 %GETPOTFIELDMAP Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,7 +18,7 @@ for line = lines
     for j = 1:s-1
         d1 = sqrt(sum(((line{1}.p1(j,:) - line{1}.p1(j+1,:))).^2,2));
         
-        n = floor(d1/25);
+        n = floor(d1/resolution);
         
         if n == 0
             outPoint = line{1}.p1(j,:);
@@ -33,7 +33,7 @@ for line = lines
     
     d1 = sqrt(sum(((line{1}.p1(1,:) - line{1}.p1(s,:))).^2,2));
         
-    n = floor(d1/50);
+    n = floor(d1/resolution);
     
     if n == 0
         outPoint = line{1}.p1(s,:);
