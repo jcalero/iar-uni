@@ -1,6 +1,6 @@
 addpath(genpath('.'));
 
-numparticles=300;    % number of particles
+numparticles=200;    % number of particles
 N=8;                 % number of sensors
 stepmove.speed=0;    % speed of movement (distance to move at every iteration)
 stepmove.turn=0;     % angle to turn at every iteration
@@ -8,13 +8,14 @@ t = 0;
 load realmap
 load distToIRMap
 centerPoints = makeCenterPoints(map);
-potFieldMap = getPotFieldMap(25);
+potFieldMap = getPotFieldMap(10);
 
-foods = [ ];
+foods = [];
 target = [460 490];
 LEDtimer = tic;
 ExploreTimer = tic;
 FoodTimer = tic;
+GiveUpTimer = tic;
 isAtFood = 0;
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
@@ -50,6 +51,7 @@ oldRSpeed = speed;
 
 while true
     
+    tic
     t = t + 1;
     
     % Generate new robot position and stepmove from odometry
@@ -71,8 +73,8 @@ while true
         end
         if (mod(t, 10) == 0)
             stop(s);
-            [ particles, bestPose, oldWeights ] = ressample(particles, sensor, stepmove, map ,sigma, oldWeights);  % ressample
-            setSpeeds(s, lSpeed, rSpeed);
+            [ particles, bestPose, oldWeights ] = ressample(particles, sensor, stepmove, map ,sigma, oldWeights, centerPoints);  % ressample
+            % setSpeeds(s, lSpeed, rSpeed);
             
             % Update robot position with the predicted position
             if (size(bestPose.position, 1) == 1 || size(bestPose.position, 2) == 1)
@@ -108,15 +110,19 @@ while true
     oldrobot.direction = robot.direction;
 
     % Plot everything
-    plotall(robot, particles, map, bestPose);
+    if (mod(t, 3) == 0)
+        plotall(robot, particles, map, bestPose);
+    end
     
     % Do navigation & control.
-    timers = [ LEDtimer ; ExploreTimer ; FoodTimer ];
+    timers = [ LEDtimer ; ExploreTimer ; FoodTimer ; GiveUpTimer ];
     [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, timers, isAtFood );
     LEDtimer = timers(1);
     ExploreTimer = timers(2);
     FoodTimer = timers(3);
+    GiveUpTimer = timers(4);
 
+    toc
     % fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
-    pause(0.01);
+    % pause(0.001);
 end

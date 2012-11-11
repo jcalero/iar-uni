@@ -4,7 +4,7 @@ function [ angle, intensity ] = getPotFieldVec(robot,map,food )
 
 outVector = [0 0];
 
-obsFactor = 800;
+obsFactor = 400;
 foodFactor = 2000;
 
 % go through entire map of objects, calculate distance to objects,

@@ -4,9 +4,12 @@ function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, 
 
     home = [ 460 490 ];
     
-    LEDtimer = timers(1);
-    ExploreTimer = timers(2);
-    FoodTimer = timers(3);
+    mapLimit = 600;
+    
+%     LEDtimer = timers(1);
+%     ExploreTimer = timers(2);
+%     FoodTimer = timers(3);
+%     GiveUpTimer = timers(4);
 
     % Rename sensor values
     leftIR1 = sensor(1);
@@ -18,7 +21,7 @@ function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, 
     %backRightIR = sensor(7);
     %backLeftIR = sensor(8);
     
-    if (mydist(home, robot.position) < 40 && isequal(target,home))
+    if (mydist(home, robot.position) < 35 && isequal(target,home))
         fprintf('Robot is close to home\n');
         if (size(foods,1) > 0)
             fprintf('New target set to primary food source\n');
@@ -27,7 +30,7 @@ function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, 
             toggleLED(s, 0, 1);
         else
             fprintf('New target set randomly\n');
-            target = [rand*940 rand*600];
+            target = [rand*940 rand*mapLimit];
             timers(2) = tic;
         end
     end
@@ -38,15 +41,22 @@ function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, 
     
     if ((toc(timers(2)) > 15 || mydist(target, robot.position) < 50) && size(foods,1) == 0)
         fprintf('New target set randomly because reached target or timer expired.\n');
-        target = [rand*940 rand*600];
+        target = [rand*940 rand*mapLimit];
         timers(2) = tic;
     end
     
     if (size(foods,1) > 0 && isequal(target,foods(1, :)) && mydist(target, robot.position) < 50)
         fprintf('Reached food source\n');
         timers(3) = tic;
+        timers(4) = tic;
         target = target + 0.01;
         isAtFood = 1;
+    end
+    
+    if (isAtFood && toc(timers(4)) > 35)
+        fprintf('Giving up on food source, going off to explore\n');
+        target = [rand*940 rand*mapLimit];
+        isAtFood = 0;
     end
     
     if (isAtFood && toc(timers(3)) > 5)
@@ -88,40 +98,45 @@ function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, 
     % Baseline obstacle avoidance code
     % =======================
     if((rightIR1 < 37.5 || rightIR2 < 28) && (leftIR1 < 37.5 || leftIR2 < 28) && ((midRightIR + midLeftIR)/2 > 55))
+        fprintf('[Obstacle Avoid] Obstacle on BOTH SIDES -> Squeze through\n');
         go(s,speed);
         return
-    end
+    % end
     
     % Adjust Left based on centre sensor
-    if (midRightIR < 55 || rightIR1 < 37.5 || rightIR2 < 28)
+    elseif (midRightIR < 55 || rightIR1 < 37.5 || rightIR2 < 28)
+        fprintf('[Obstacle Avoid] Obstacle on the RIGHT\n');
         stop(s)
         turn(s,-turnspeed,turnspeed)
         return
-    end
+    % end
 
     % Adjust Left based on centre sensor
-    if ((midLeftIR < 55 || leftIR1 < 37.5 || leftIR2 < 28))
+    elseif ((midLeftIR < 55 || leftIR1 < 37.5 || leftIR2 < 28))
+        fprintf('[Obstacle Avoid] Obstacle on the LEFT\n');
         stop(s)
         turn(s,turnspeed,-turnspeed)
         return
-    end
+    % end
     % ======================
-    
-    % Get potential field direction
-    [a,~] = getPotFieldVec(robot, potFieldMap, target);
-        
-    if(a > 0)
-        rSpeed = speed;
-        lSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
     else
-        lSpeed = speed;
-        rSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
-    end
-    
-    if(oldLSpeed ~= lSpeed || oldRSpeed ~= rSpeed)
-         setSpeeds(s,lSpeed,rSpeed);
-         oldLSpeed = lSpeed;
-         oldRSpeed = rSpeed;
+        % Get potential field direction
+        %fprintf('[Potential Field] Calculate drive angle\n');
+        [a,~] = getPotFieldVec(robot, potFieldMap, target);
+
+        if(a > 0)
+            rSpeed = speed;
+            lSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
+        else
+            lSpeed = speed;
+            rSpeed = max(round(speed - (12 * abs(a) / 180) -1),-speed);
+        end
+
+        if(oldLSpeed ~= lSpeed || oldRSpeed ~= rSpeed)
+            setSpeeds(s,lSpeed,rSpeed);
+            oldLSpeed = lSpeed;
+            oldRSpeed = rSpeed;
+        end
     end
 
 end
