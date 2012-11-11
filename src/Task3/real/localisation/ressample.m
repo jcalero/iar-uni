@@ -20,12 +20,8 @@ posit=zeros(numpart,2);
 direc=zeros(numpart,2);
 
 for i=1:(numpart - floor(reInitAmt*numpart))
-    posit(i,:) = particles.position(j(i),:) + randn(1,2)*stepmove.speed/10;   % get new particle, with drawn index and noise
-    theta=randn*stepmove.turn/4;
-    trans=[cos(theta) sin(theta);
-           -sin(theta) cos(theta)];
-
-    direc(i,:) = (trans*particles.direction(j(i),:)')';
+    posit(i,:) = particles.position(j(i),:);
+    direc(i,:) = particles.direction(j(i),:);
 end
 
 if (reInitAmt > 0)
@@ -35,10 +31,9 @@ if (reInitAmt > 0)
 end
 
 
-particles.position=posit;      %writes matrices on the structure
+particles.position=posit;
 particles.direction=direc;
 
 oldWeights = weight;
-
 
 end

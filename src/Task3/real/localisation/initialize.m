@@ -7,7 +7,7 @@ fprintf('Initializing particles and the robot based on starting position\n')
 % Start position and direction
 startX = 460;
 startY = 490;
-startA = [cos(pi/2); sin(pi/2)];
+startA = [cos(pi); sin(pi)];
 
 % initialises particles at the starting position and direction
 particles.position=[(repmat(startX, numpartic, 1)) (repmat(startY, numpartic, 1))];

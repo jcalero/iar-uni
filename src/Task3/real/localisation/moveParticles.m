@@ -4,10 +4,10 @@ function [ position, direction ] = moveParticles( position, direction, stepmove 
 %   the function considers stochasticity affecting the turn angle and speed
 %   and constraints the particle movements based on map data
 
-theta=stepmove.turn+randn*stepmove.turn/2;      % the turn angle is afected by stochasticity
+theta=stepmove.turn+randn*stepmove.turn/10;      % the turn angle is afected by stochasticity
 trans=[cos(theta) sin(theta);     % defines the rotation operator
       -sin(theta) cos(theta)];
-speed=stepmove.speed+randn*stepmove.speed/5;    %the speed is afected by stochasticity
+speed=stepmove.speed+randn*stepmove.speed/10;    %the speed is afected by stochasticity
 
 direction= trans*direction;         %rotates the direction
 direction=direction/norm(direction); %normalizes the direction

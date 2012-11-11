@@ -1,6 +1,6 @@
 addpath(genpath('.'));
 
-numparticles=200;    % number of particles
+numparticles=300;    % number of particles
 N=8;                 % number of sensors
 stepmove.speed=0;    % speed of movement (distance to move at every iteration)
 stepmove.turn=0;     % angle to turn at every iteration
@@ -8,11 +8,14 @@ t = 0;
 load realmap
 load distToIRMap
 centerPoints = makeCenterPoints(map);
-potFieldMap = getPotFieldMap();
+potFieldMap = getPotFieldMap(25);
 
-foods = [];
+foods = [ ];
 target = [460 490];
 LEDtimer = tic;
+ExploreTimer = tic;
+FoodTimer = tic;
+isAtFood = 0;
 
 [particles, robot]=initialize(numparticles);    % initializes particles and the robot
 
@@ -21,7 +24,7 @@ oldWeights = ones(numparticles,1);
 oldrobot.position = robot.position;
 oldrobot.direction = robot.direction;
 
-stddeviation=30;  % defines stddeviation. they are the same for every dimension.
+stddeviation=10;  % defines stddeviation. they are the same for every dimension.
 ro=.5;
 sigma=[]; sigma(1:N,1:N)=ro*stddeviation^2; sigma=sigma-sigma.*eye(N)+eye(N).*stddeviation^2; % defines the covariance matrix 
 
@@ -94,10 +97,6 @@ while true
         end
     end
     
-    % Some test outputs
-    size(bestPose.position);
-    bestPose.position(1,:);
-    
     % Fix for annoying one-case situation.
     if (size(robot.position, 1) == 2 && size(robot.position, 2) == 1)
         robot.position = robot.position';
@@ -112,7 +111,11 @@ while true
     plotall(robot, particles, map, bestPose);
     
     % Do navigation & control.
-    [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, LEDtimer );
+    timers = [ LEDtimer ; ExploreTimer ; FoodTimer ];
+    [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, timers, isAtFood );
+    LEDtimer = timers(1);
+    ExploreTimer = timers(2);
+    FoodTimer = timers(3);
 
     % fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
     pause(0.01);

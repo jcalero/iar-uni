@@ -1,8 +1,12 @@
-function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, LEDtimer )
+function [ oldLSpeed, oldRSpeed, foods, target, timers, isAtFood ] = control(s, robot, potFieldMap, sensor, foods, target, speed, turnspeed, oldLSpeed, oldRSpeed, timers, isAtFood )
 %CONTROL Summary of this function goes here
 %   Detailed explanation goes here
 
     home = [ 460 490 ];
+    
+    LEDtimer = timers(1);
+    ExploreTimer = timers(2);
+    FoodTimer = timers(3);
 
     % Rename sensor values
     leftIR1 = sensor(1);
@@ -14,26 +18,41 @@ function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, p
     %backRightIR = sensor(7);
     %backLeftIR = sensor(8);
     
-    if (mydist(home, robot.position) < 20 && isequal(target,home))
+    if (mydist(home, robot.position) < 40 && isequal(target,home))
         fprintf('Robot is close to home\n');
         if (size(foods,1) > 0)
-            fprintf('New target set to first food source\n');
+            fprintf('New target set to primary food source\n');
             target = foods(1, :);
-            LEDtimer = tic;
+            timers(1) = tic;
             toggleLED(s, 0, 1);
         else
             fprintf('New target set randomly\n');
-            target = [rand*940 rand*1440];
+            target = [rand*940 rand*600];
+            timers(2) = tic;
         end
     end
     
-    if (toc(LEDtimer) > 0.75)
+    if (toc(timers(1)) > 0.75)
         toggleLED(s, 0, 0)
     end
     
-    if (mydist(target, robot.position) < 20 && size(foods,1) == 0)
-        fprintf('New target set randomly because reached target\n');
-        target = [rand*940 rand*1440];
+    if ((toc(timers(2)) > 15 || mydist(target, robot.position) < 50) && size(foods,1) == 0)
+        fprintf('New target set randomly because reached target or timer expired.\n');
+        target = [rand*940 rand*600];
+        timers(2) = tic;
+    end
+    
+    if (size(foods,1) > 0 && isequal(target,foods(1, :)) && mydist(target, robot.position) < 50)
+        fprintf('Reached food source\n');
+        timers(3) = tic;
+        target = target + 0.01;
+        isAtFood = 1;
+    end
+    
+    if (isAtFood && toc(timers(3)) > 5)
+        fprintf('Adjusting food target\n');
+        target = [ target(1) + randn*20 , target(2) + randn*20 ];
+        timers(3) = tic;
     end
     
     plot(target(1), target(2), 'og');
@@ -53,14 +72,16 @@ function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, p
         for i=1:size(foods,1)
             if (mydist(robot.position, foods(i,:)) < 50)
                 inGoals = 1;
+                target = home;
                 break;
             end
         end
         
         if (~inGoals)
-            foods = [foods; robot.position];
+            foods = [robot.position; foods]; % Add the new food to the top. This will be our primary food source now.
             target = home;
         end
+        isAtFood = 0;
         return
     end
 
@@ -87,7 +108,7 @@ function [ oldLSpeed, oldRSpeed, foods, target, LEDtimer ] = control(s, robot, p
     % ======================
     
     % Get potential field direction
-    [a,c] = getPotFieldVec(robot, potFieldMap, target);
+    [a,~] = getPotFieldVec(robot, potFieldMap, target);
         
     if(a > 0)
         rSpeed = speed;

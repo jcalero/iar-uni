@@ -4,6 +4,9 @@ function [ angle, intensity ] = getPotFieldVec(robot,map,food )
 
 outVector = [0 0];
 
+obsFactor = 800;
+foodFactor = 2000;
+
 % go through entire map of objects, calculate distance to objects,
 % check if distance within 10cm, calculate vector from object to robot,
 % add to overall vector
@@ -12,7 +15,7 @@ for x = map'
     d = sqrt(sum((x'-robot.position).^2,2));
     if d < 100
         temp = (robot.position - x')/norm((robot.position - x'));
-        factor = 400/(d^2);
+        factor = obsFactor/(d^2);
         outVector = outVector + (factor .* temp);
     end
 end
@@ -23,9 +26,9 @@ end
 s = size(food);
 for y = food'
     d = sqrt(sum((y'-robot.position).^2,2));
-    if(d < 2000)
+    if(d < foodFactor)
         temp = (y' - robot.position)/norm((y' - robot.position));
-        outVector = outVector + ((2000 - d)/(2000*s(1)).* temp);
+        outVector = outVector + ((foodFactor - d)/(foodFactor*s(1)).* temp);
     end
 end
 
