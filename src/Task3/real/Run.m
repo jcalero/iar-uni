@@ -50,8 +50,6 @@ oldLSpeed = speed;
 oldRSpeed = speed;
 
 while true
-    
-    tic
     t = t + 1;
     
     % Generate new robot position and stepmove from odometry
@@ -121,8 +119,6 @@ while true
     ExploreTimer = timers(2);
     FoodTimer = timers(3);
     GiveUpTimer = timers(4);
-
-    toc
     % fprintf('Paused. press any key for next iteration.\nPress ctrl+C to stop \n')
     % pause(0.001);
 end
