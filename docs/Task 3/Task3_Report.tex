@@ -118,22 +118,9 @@ Exploration was chosen to be entirely random mainly due to simplicity of impleme
 
 \section{Methods} 
 \subsection{Map}
-The map we used for this task is represented as line equations, given the start and end points of the walls of each obstacle. This implementation has the benefit of giving us a much finer resolution to work with and that no translation of robot position to discrete space has to be performed, but suffers from the problem that we need to constantly compute line intersections and that round objects need to be approximated. We decided to use this representation since it had been mentioned (HERE,HERE AND HERE) and because we could reuse the code from (HERE), saving us time we could therefore use for the other problems.
+The map we used for this task is represented as line equations, given the start and end points of the walls of each obstacle. This implementation has the benefit of giving us a much higher precision to work with and that no translation of robot position to discrete space has to be performed, but suffers from the problem of relatively computationally expensive line intersections, particularly when combined with particle filtering. Essentially each object on the map is represented by a set of line segments and distances to objects are calculated with line intersections between a vector drawn from the source to the closes line in its path. This implementation is entirely \emph{as is} from D. Oliveria's particle filter implementation.\cite{oliveira}
 
-\begin{itemize}
-\item Particle Filter
-\begin{itemize}
-\item Reasons
-\item Implementation
-\begin{itemize}
-\item Found from here
-\item Extended like this
-\begin{itemize}
-\item IR values
-\end{itemize}
-\end{itemize}
-\end{itemize}
-\end{itemize}
+The arena itself is a 1.44m by 0.96m flat surface, with enclosing walls and multiple, fixed obstacles of various shapes and sizes. (\emph{\ref{potfieldmap}}) All our units throughout all our calculations are translated to millimetres which gives us high precision and an easy to use metric.
 
 \subsection{Particle Filter}
 Again, building on the work of (XY) instead of building a particle filter from scratch, we used the existing code and adapted it to our needs. (THE AUTHOR) had provided a simulation which worked reasonably well,... (METRICS?). Another reason was that we had attempted to implement the Kalman filter for a Khepera II robot which has been described in (THIS PAPER) and seeing a simulation of a working particle filter looked like a better option than half-finished code based on an explanation which was not particularly clear.
@@ -199,6 +186,21 @@ can't think anymore, too much coffee...
 
 	Dynamic Particle Filter – higher deviation if certainty is low, fewer particles if certainty is high, randomize particles if certainty is very low.
 	Potential field modifications, function around objects
+
+\begin{thebibliography}{9}
+\bibitem{oliveira}
+  Danilo Oliveira,
+  \emph{Particle Filter Implementation in Matlab},
+  ai-class.com,
+  2011,
+  \url{http://www.youtube.com/watch?v=sjny6-lVtb4}.
+\bibitem{aiclass}
+  Peter Norvig, Sebastian Thrun,
+  2012,
+  \emph{Introduction to Artificial Intelligence},
+  Udacity, Stanford Engineering,
+  \url{http://www.ai-class.com}.
+\end{thebibliography}
 \section{Appendix}
 \subsection{Code listing}
 
