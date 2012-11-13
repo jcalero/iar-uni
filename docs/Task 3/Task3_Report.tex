@@ -110,16 +110,11 @@ This leads us to the three main problems in this task; how to implement localiza
 \end{itemize}
 \end{itemize}
 
-\textbf{I think we need to be clearer here on why we chose certain methods. What lead us to choose X over Y?}
+From our previous task (\emph{Task 2 - Robot can combine behaviours}) we had already implemented a simple navigation system with differential wheel movements given a direction in absolute angles. An easy extension to that control behaviour was to create a potential field to calculate this directional angle, which lead to us making that choice for navigation. This lead to the choice of using a continuous map representation as this makes more sense when for a potential field and allows us to be more precise when specifying the map and robot coordinates.
 
-\textbf{Particle filter better in non-linear system. Kalman filter optimal in linear estimation with guassian noise, but not otherwise. Particle filter with high enough samples will reach closer to optimal state in non-linear systems.}
+For localisation, undoubtedly the most difficult (and arguably most significant) task in this assignment, we rather quickly gravitated to the choice of using a particle filter, partially due to the fact that it's relatively easy to implement and that, given enough samples, we hope to reach a better estimate than using an Extended Kalman Filter. Our work on the particle filter in this task is mainly extended from an online resource by student Danilio Oliveira at P. Norvig's and S. Thrun's online course, \url{http://www.ai-class.com}. \cite{oliveira}\cite{aiclass}
 
-\textbf{http://stats.stackexchange.com/questions/2149/what-is-the-difference-between-a-particle-filter-sequential-monte-carlo-and-a}
-
-\textbf{Wiki particle filter}
-
-
-For reasons of simplicity and the resulting time we expected the implementation to take, we decided to use a continuous map, where point-to-point lines represent walls and obstacles, as described in (Kalman filter paper) and (where we got the particle filter from). This decision and given that we wanted to build on the work done by (same reference for particle filter) ultimately led us to use a particle filter for localization, an online potential field for navigation and random sampling for exploration of the arena.
+Exploration was chosen to be entirely random mainly due to simplicity of implementation and the nature of the task. We had no information about the food sources location, spread or amount so we had very little to base our exploration on and found that, in the relatively small arena, a stochastic exploration method would be sufficient. Food collection was chosen to be rather straight forward where the robot simply takes home the first food source it finds and later returns to it for more food essentially abandoning exploration, but changing its main food source if another source is found on the way to or from the previous food source. Additionally, if, after a time at the predicted food source location, the food source is not "detected" (this is done by covering all the robots IR sensors at once) the robot will abandon this food source and resume exploration.
 
 \section{Methods} 
 \subsection{Map}
