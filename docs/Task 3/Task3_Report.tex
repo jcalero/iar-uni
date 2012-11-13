@@ -80,33 +80,44 @@ In order to make a Khepera II robot navigate through an arena, find marked posit
 In general..
 
 \section{Introduction}
-The task the robot had to perform was to drive through an arena with the goal of finding marked positions ('food sources') and returning as much 'food' as possible to the home position. In order to do so, it had to reliably track its position in order to navigate and explore the map, avoid obstacles and gather the food.
+In this final assignment we are given the task to put together our experience from previous tasks in navigation and control and add it to a more complex goal-based navigation and localisation problem based on a fixed map environment.
 
-The three main problems which this task posed were how to implement localization, navigation and goal directed behaviour. Underlying all three of these problems a decision had to be made about the representation of the known and static map of the arena. In order to solve the task at hand in the time span we had available, we narrowed down our options to having to choose from the following methods:
+The task asks us to emulate a basic "collection" behaviour, where our Khepera II robot is tasked to navigate through a known environment searching for possible "food sources" and return collected food from the sources to a fixed home position. In order to do so, the robot has to reliably track its position to be capable of navigating and exploring the map, avoid obstacles, gather the food, return to the correct home position and be able to return to previous food positions again.
+
+This leads us to the three main problems in this task; how to implement localization, navigation and goal directed behaviour. Underlying all three of these problems a decision had to be made about the representation of the known and static map of the arena and the method to be used for location prediction of the robot pose. We narrowed down our options based on our experience in the course, our previous experience in robotics and the task at hand to the following methods:
 
 \begin{itemize}
-\item Map: 
+\item Map representation 
 \begin{itemize}
-\item a discrete map of occupancy grids
-\item a continuous representation using point-to-point lines
+\item A discrete map of occupancy grids
+\item A continuous representation using point-to-point lines
 \end{itemize}
-\item Localization: 
+\item Localisation
 \begin{itemize}
-\item Kalman filter
+\item Extended Kalman filter
 \item Particle filter
 \end{itemize}
-\item Navigation:
+\item Navigation
 \begin{itemize}
 \item A* path finding
 \item Potential field
 \end{itemize}
-\item Planning:
+\item Planning
 \begin{itemize}
 \item Fixed points the robot should visit
 \item A coverage heuristic of how much of the map has been explored
-\item Random sampling
+\item Stochastic exploration
 \end{itemize}
 \end{itemize}
+
+\textbf{I think we need to be clearer here on why we chose certain methods. What lead us to choose X over Y?}
+
+\textbf{Particle filter better in non-linear system. Kalman filter optimal in linear estimation with guassian noise, but not otherwise. Particle filter with high enough samples will reach closer to optimal state in non-linear systems.}
+
+\textbf{http://stats.stackexchange.com/questions/2149/what-is-the-difference-between-a-particle-filter-sequential-monte-carlo-and-a}
+
+\textbf{Wiki particle filter}
+
 
 For reasons of simplicity and the resulting time we expected the implementation to take, we decided to use a continuous map, where point-to-point lines represent walls and obstacles, as described in (Kalman filter paper) and (where we got the particle filter from). This decision and given that we wanted to build on the work done by (same reference for particle filter) ultimately led us to use a particle filter for localization, an online potential field for navigation and random sampling for exploration of the arena.
 
