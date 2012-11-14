@@ -75,9 +75,7 @@ tabsize=2
 \begin{document}
 \maketitle					% Insert the title here
 \section{Abstract}
-In order to make a Khepera II robot navigate through an arena, find marked positions, return home and repeat this process, we have used and extended an implementation of a particle filter for our needs. This worked well in these cases and not so well in these other cases.
-
-In general..
+Even with the limited information which can be extracted from the Khepera II robot's IR-sensors, particle filters can successfully estimate the location and orientation of said robot in a static arena. Using potential field navigation and stochastic sampling of positions in the arena, in combination with the localization from the particle filter, we were able to reliably find marked positions, return to the starting position and repeat this process several times in a few minutes. The system does have a few drawbacks, including speed of execution, some navigation fallacies as well as uncertainty of finding market positions due to stochastic sampling, but overall the methods we implemented work well together and get the job done as specified.
 
 \section{Introduction}
 In this final assignment we are given the task to put together our experience from previous tasks in navigation and control and add it to a more complex goal-based navigation and localisation problem based on a fixed map environment.
