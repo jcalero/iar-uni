@@ -23,7 +23,8 @@
 \lstset{
 language=Matlab,
 basicstyle=\footnotesize,
-tabsize=2
+tabsize=2,
+breakline=true
 }
 
 
@@ -75,7 +76,7 @@ tabsize=2
 \begin{document}
 \maketitle					% Insert the title here
 \section{Abstract}
-Even with the limited information which can be extracted from the Khepera II robot's IR-sensors, particle filters can successfully estimate the location and orientation of said robot in a static arena. Using potential field navigation and stochastic sampling of positions in the arena, in combination with the localization from the particle filter, we were able to reliably find marked positions, return to the starting position and repeat this process several times in a few minutes. The system does have a few drawbacks, including speed of execution, some navigation fallacies as well as uncertainty of finding market positions due to stochastic sampling, but overall the methods we implemented work well together and get the job done as specified.
+Even with the limited information which can be extracted from the Khepera II robot's IR-sensors, particle filters can successfully estimate the location and orientation of said robot in a static arena. Using potential field navigation and stochastic exploration in the arena, in combination with the localization from the particle filter, we were able to reliably find marked positions, return to the starting position and repeat this process several times in a few minutes. The system does have a few drawbacks, including speed of execution, some navigation fallacies as well as uncertainty of finding market positions due to stochastic exploration, but overall the methods we implemented work well together and get the job done as specified.
 
 \section{Introduction}
 In this final assignment we are given the task to put together our experience in navigation and control from previous tasks and add it to a more complex goal-based navigation and localisation problem based on a fixed map environment.
@@ -123,13 +124,13 @@ The arena itself is a 1.44m by 0.96m flat surface, with enclosing walls and mult
 \subsection{Localisation}
 Building on the work of D. Oliveira particle filter simulation instead of building a particle filter from scratch allowed us to save time and learn from the process. Much of it was heavily modified however and had to be adapted it to our needs.
 
-The particle filter uses the reading from the robots 8 IR sensors as its only predictor for calculating the probability of 200 particles. Movement of the particles are based on the values given by our odometry and not by the robot commands, under the assumption that odometry is accurate enough in short time intervals like those of our robot control loop (each iteration taking 482ms over 10 3 minute runs, see \ref{exptable}).
+The particle filter uses the reading from the robots 8 IR sensors as its only predictor for calculating the probability of 200 particles. Movement of the particles are based on the values given by our odometry and not by the robot commands, under the assumption that odometry is accurate enough in relatively short time intervals like those of our robot control loop (each iteration taking an average of 482ms, see \ref{exptable}).
 
 To find the probability of each particle, D. Oliveiras particle filter used a distance metric which was computed as the distance between 'sensors', spread evenly around the 'robot', to the closest wall. This method was close to how our robot would sense the world but required some adaptation. 
 
 While the particle line intersections return distances in millimetres, the robot IR sensors return values much less linearly (see \ref{irvals}) so we had to find some function to map sensory information to distance in millimetres. We expected either logarithmic or exponential regression fitting to allow us to fit a function over the sensor values but found little success (\ref{fitgraph})\cite{wolfram}. We therefore decided to instead measure values in 1cm intervals and linearly interpolate between them giving us close enough approximations in the distances between our measured values. Due to the low range of the sensors, we decided to cap the values at 7cm, seeing that very little information can be gained from sensor values at further distances (\ref{irvals}). This also allowed us to limit the amount of line intersections to be calculated during particle probability estimations to only be performed on objects closer than 7cm, drastically improving computation speed. 
 
-The movement of particles is governed by a random variable in the normal distribution with a a relatively small standard deviation relative to the robot movements since last loop iteration. This is a deviation from D. Oliveiras work which used a constant standard deviation relatively large to it's movement space. The particles are resampled once every 10th control loop iteration, making it on average once every 4.82 seconds (\(10* 0.482\text{ seconds}\)) and given our experience with odometry, on a run of this length of time, odometry is generally fairly accurate allowing us to use a smaller standard deviation and the smaller the movement the higher the accuracy and the lower the standard deviation.
+The movement of particles is governed by a random variable in the normal distribution with a a relatively small standard deviation relative to the robot movements since last loop iteration. This is a deviation from D. Oliveiras work which used a constant standard deviation relatively large to it's movement space. The particles are resampled once every 10th control loop iteration, making it on average once every 4.82 seconds (\(10* 0.482\text{ seconds}\)) and given our experience with odometry, on a run of this length of time, odometry is generally fairly accurate allowing us to use a smaller standard deviation and the smaller the movement the higher the accuracy and the lower the standard deviation. Each particle is also checked for nearby collisions making sure it doesn't move inside obstacles our outside walls. While this is not strictly necessary it emulates the real behaviour of the robot better.
 
 \subsection{Potential Field}
 To navigate through the arena, we had to find a method which would work with our continuous map, which meant that certain methods like A* path search were out of the question. The potential field method we use was a close solution since we already had a movement method from the last task which takes an angle relative to the robot and translates it into relative wheel speeds (Motor Schema Architecture, Arkin 1989). Again, due to the fact that our map is not discretised, we found it easier to not precompute the potential field, but instead calculate the vector, which gives the direction the robot should move in, in real-time.
@@ -142,52 +143,42 @@ Overall, this method is quite simple, relatively quick, since it only needs to c
 
 \subsection{Control}
 The robot is controlled by a simple hybrid architecture with two deliberative, high level, components, "explore" and "collect food", and two reactive, low level, components, "navigate/go to target" and "avoid obstacle". The high level components are chosen based on the simple condition of whether the robot knows where there is food and whether it has food in its "possession". Both conditions can change to either state throughout the robot lifetime by "forgetting" a food location, done via time-out at predicted food location, and dropping of a food item at the home location. Navigation will take care of executing the plan by performing the wheel operations based on the response from the potential field and a baseline obstacle avoidance, adapted from our previous task in this course (Task 1 - Robot avoids obstacles and follows walls.), which will reactively force movement away from an obstacle if travelled to close to it. \ref{architecture}
+
 \subsubsection{Target planning}
-When the robot starts from its initial position, the control code will first set a random position as the target so that the robot starts exploring. If the robot is unable to reach the target within 15 seconds, a new random position within the arena is chosen. If the robot encounters a food source during exploration --- as specified by blocking all of its IR-sensors --- it will store that position and return home. Once it has reached home it will return to the last food position and repeat the process unless it finds a new food position on it's path. If it thinks it's reached the food position but the collection event is not triggered, in 5 seconds intervals it will place a new target at a random position within 4 cm radius around the food source to explore around that position. If after 35 seconds since it first arrived at the food source the collection event is still not triggered the food source will be removed from the robots memory and the robot will either move to another known food position or resume exploration of the map. 
+When the robot starts from its initial position, the control code will first set a random position as the target so that the robot starts exploring. If the robot is unable to reach the target within 15 seconds, a new random position within the arena is chosen. If the robot encounters a food source during exploration --- as specified by blocking all of its IR-sensors --- it will store that position and return home. Once it has reached home it will return to the last food position and repeat the process unless it finds a new food position on it's path. If it thinks it's reached the food position but the collection event is not triggered, in 5 seconds intervals it will place a new target at a random position within 4 cm radius around the food source to explore around that position. If after 35 seconds since it first arrived at the food source the collection event is still not triggered the food source will be removed from the robots memory and the robot will either move to another known food position or resume exploration of the map.
+
 \subsection{Experimental methods}
 To record and evaluate the performance of our robot in the given task we performed 10 subsequent runs of 3 minutes each in the actual arena to be used during the demonstration. The robot was however artificially constricted to the lower half of the arena to mitigate for the shorter runs. There were 5 food source locations reachable by the robot. The home position was a circle of approximately 11 cm radius and the robot was considered home if it stopped and flashed its LED lights when fully inside the circle. Food sources were spots on the arena of approximately 5mm radius and the food collection event was performed when any part of the robot passed on top of them. "Points" were calculated by giving 1 point for each food source reached/found and 5 points for each food item returned home.
+
 \section{Results}
 GRAPH
 
 Once a food source was found, our robot performed well, with an average of 10 points over those runs. However, only 40\% of the runs actually found any food source at all lowering the point average to 4 points per run.
 
-The particle filter showed very good results however throughout all tests, giving an average 93\% correct prediction.
+The particle filter showed very good results however throughout all tests, giving an average 93\% correct prediction. The longest sequence of incorrect resamplings in out test set was 5 resamplings before it found the correct location again. This amounts to approximately 30 consecutive seconds at which the robot was incorrectly localised (\(1.87s * 5 + (0.482s * 10 * 5) = 30.035s\)). One other case had 3 consecutive mis-predictions but the rest were at most incorrectly localised only once before correcting itself.
 
 On average each timestep (control loop iteration) took 0.546s, with an average of 1.187 for the resampling once every 10 timesteps and 0.482s the rest of loop. The resampling time was largely dominated by the calculation of predicted IR values by line intersection at 4.9ms per particle, which at 200 particles adds up to 980ms, ~82.6\% of the total timestep. The times were calculated by timing each component of each run and averaging over all the runs.
+
 \section{Discussion}
+We can show that by solving the individual problems of navigation, localisation and control we can make a Khepera robot perform a multi-goaled task in a predefined arena. The robot performs as expected, can localise itself reliably and can complete the task specified but falls short on one main aspect, the discovery of food sources. This stems from two underlying problems: the speed of the robot and the exploratory behaviour.
 
-\begin{verbatim}
-•	What worked
-◦	Finds itself in X\% of cases when next to a wall (can we even quantify this at all?)
-◦	Potential field navigation can result in pretty smooth movement
-•	Issues
-◦	Assignment of robot position to wrong particle when not next to a wall
-▪	In general: Not enough information from IR sensors in these cases to make a good prediction
-◦	Particles moving into objects
-◦	Speed/Performance of particle filter
-◦	Potential field navigation can get stuck when vectors add up straight into objects
-\end{verbatim}
+The average time for each control loop when it's not resampling is almost half a second, forcing us to use a slower movement speed for our robot simply due to the low update frequency. As we can only send commands to the robot once each timestep, at a higher speed, the robot would move further before a new command is transmitted and thus lose precision. Additionally, every 10 iterations a pause of an average 1.187 seconds would occur due to the particle filter resampling at which the robot doesn't move at all further slowing down its behaviour.
 
-This was one of the main issues in our test usually finding a food source within (X amount of time), returning it home in Y\% and finding it again in Z\% of cases. The three main issues we had were that resampling of the particles took too long, that our simplistic potential field navigation did not really do any sophisticated path finding and that there existed too much ambiguity from the sensor values if the robot was not next to any wall.
+\subsection{Map and exploration/control}
+To help the robot find food quicker, a heuristic approach could've been used for exploraiton instead of the simple, naive, stochastic approach. For example, as a simple extension the map could've been divided in sections of equal area of empty space (space not covered by an obstacle) approximating the surface area of the robot base (for example, 2 * robot diameter). This information can be precomputed and stored as a separate map. Now, in robot exploration mode instead of chosing an arbitrary random location it will pick the closest location from the list of map sections and make sure to pick a new one each time until all have been visited. This would allow a more reliable coverage of the arena with a higher expectation of finding a food source.
 
-\subsection{Particle Filter}
-We mitigated the issue of the resampling taking up that much time by reducing the number of walls the prediction of the IR-values for each particle would take into account as well as only resampling every ten loop iterations. Still, having to stop every couple of seconds to give the robot 'time to think', is suboptimal and reduced the area of the map our robot was able to cover in a given time, ultimately restricting us in the strategies we could pursue. What we did learn from having to work around the issue and resampling only every so often on the other hand, was that this can actually be beneficial. If the robot resamples less often while being clear of any walls and thus having no inputs to the IR-sensors, the amount of misplacement of particles is reduced and we therefore achieved a higher accuracy over longer runtimes.
+\subsection{Localisation}
+In terms of accuracy we feel the particle filter performed as desired, but when it comes to speed of calculation there is much that could be improved.
 
-In general, the particle filter worked well, as can be seen by the deviation over a number of timesteps in (PICTURES after 30s, 1min, 2min, 5min or something). It updated the position quite reliably and even though it sometimes got it wrong when too little data could be gathered over too many resampling steps, it corrected itself in most cases as soon as it hit a wall and was able to gather more telling data from the IR-sensors.
+By far the slowest operation in our particle filtering (and our control in general) is the calculation simulated IR-values for each of the particles. This was greatly reduced by reducing the number of walls the prediction of the IR-values for each particle would take into account as well as only resampling every ten loop iterations. Still, the operation is one of mathematical nature that can most certainly be improved directly, by, for example, making better use of matlabs powerful matrix operations.
 
-\subsection{Potential field navigation}
-The potential field navigation we had used again worked well in most cases, but had some clear drawbacks. It did make the robot reliably avoid obstacles and move between them, but once a larger obstacle directly blocked the path to the target, the way we calculated the vectors would point the robot straight towards the obstacle instead of around it. One case which clearly shows this to be a problem, is the L-shaped obstacle as seen in (DIAGRAM). With the robot coming from the bottom and the target being on the other side, it would attempt to move straight into the wall until the control loop would deem the target unreachable after a certain amount of time and set a new one.
+Mathematics aside the speed performance can also be indirectly improved by using a dynamic number of particles. The number could start relatively low (100 for example) and increase or decrease, with a hard floor and ceiling, depending on the certainty of each prediction. This would need to be balanced properly as too few particles can drastically reduce prediction performance and intermittedly lose valuable information.
+\subsection{Navigation}
+While the potential field worked for our simple purposes of navigation it too can be improved to increase robot efficency. It did make the robot reliably avoid obstacles and move between them, but once a larger obstacle directly blocked the path to the target, given that we calculate the vectors in a simple, linear way, repulsing directly away from obstacles and attracting directly towards the goals, this would point the robot straight towards an obstacle if a target was directly behind it.
 
-For all intents and purposes, the functionality it provided was reasonable and its simplicity meant that we did not have to spend much time on tweaking it. Although the down-sides were clear, the navigation worked well together with the way we set and reset targets and we never felt that we lost too much time by trying to 'move through' an obstacle.
-
-\subsection{Overall}
-can't think anymore, too much coffee...
-
-
-\textbf{(This goes in discussion) POSSIBLE EXTENSIONS}
-
-	Dynamic Particle Filter – higher deviation if certainty is low, fewer particles if certainty is high, randomize particles if certainty is very low.
-	Potential field modifications, function around objects
+For all intents and purposes, the functionality it provided was reasonable and its simplicity meant that we did not have to spend much time on tweaking it.
+\subsection{Finally}
+To conclude, this exercise has illustrated how well methods like particle filtering can work, even with minor sensory information, in predicting an accurate robot pose in a pre defined arena. We can also take away that, while functional soundess is important, so is efficency and method of implementation. Something like a slower algorithm can propagate through the entire implementation and force a change of strategy that could have otherwise been avoided.
 
 \begin{thebibliography}{9}
 \bibitem{oliveira}
